@@ -32,9 +32,14 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.13.3",
+    "bookshelf": "^0.10.2",
     "compression": "^1.5.2",
     "cors": "^2.7.1",
     "express": "^4.13.3",
+    "got": "^6.5.0",
+    "jsonapi-mapper": "^1.0.0-beta.8",
+    "knex": "^0.12.5",
+    "pg": "^6.1.0",
     "resource-router-middleware": "^0.5.1"
   },
   "devDependencies": {
