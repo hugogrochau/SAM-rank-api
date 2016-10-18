@@ -100,7 +100,7 @@ export default ({ config, bs }) => {
           .set(ranks)
           .save()
           .then(success => res.status(200).json({'success': {'message': 'Player updated'}}))
-          .catch(err => res.status(500)({'error': {'message': err}}));
+          .catch(err => res.status(500).json({'error': {'message': err}}));
       })
       .catch(err => res.status(500).json({'error': {'message': err}}));
 
