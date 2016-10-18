@@ -4,7 +4,7 @@ import player from './player';
 
 export default ({ config, bs }) => {
 	const api = Router();
-
+  
 	api.use('/player', player({ config, bs }));
 
 	// perhaps expose some API metadata at the root

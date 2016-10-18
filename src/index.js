@@ -4,41 +4,44 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import knex from 'knex';
 import bookshelf from 'bookshelf';
-import middleware from './middleware';
 import api from './api';
-import config from './config.json';
+import fileConfig from './config.json';
 import databaseConfig from './database.json';
-import Player from './models/player';
+import getRanks from './lib/rocket_league_tracker_api';
+import _ from 'lodash';
+
 
 const app = express();
 app.server = http.createServer(app);
 
 // 3rd party middleware
 app.use(cors({
-	exposedHeaders: config.corsHeaders
+	exposedHeaders: fileConfig.corsHeaders
 }));
 
 app.use(bodyParser.json({
-	limit : config.bodyLimit
+	limit : fileConfig.bodyLimit
 }));
 
 // connect to db
 const bs = bookshelf(knex(databaseConfig));
 
-// internal middleware
-app.use(middleware({ config, bs }));
+// get constants from db
+const Constants = bs.Model.extend({'tableName': 'constants'});
+Constants.collection().fetchOne().then(data => {
+  const config = Object.assign(fileConfig, _.mapKeys(data.attributes, (v,k) => _.camelCase(k)));
 
-// api router
-app.use('/api/v1', api({ config, bs }));
+  // internal middleware
+  // app.use(middleware({ updatedConfig, bs }));
 
-// // error handling
-// app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).send({'error': {'message': 'Internal server error'}});
-// });
+  // api router
+  app.use('/api/v1', api({ config, bs }));
 
-app.server.listen(process.env.PORT || config.port);
+  app.server.listen(process.env.PORT || config.port);
 
-console.log(`Started on port ${app.server.address().port}`);
+  console.log(`Started on port ${app.server.address().port}`);
+
+});
+
 
 export default app;
