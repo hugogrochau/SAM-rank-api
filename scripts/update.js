@@ -5,7 +5,7 @@ const querystring = require('querystring');
 
 const API = 'http://127.0.0.1:8080/api/v1/';
 const INTERVAL = 15; // minutes
-const SIMULTANEOUS_WORKERS = 4;
+const SIMULTANEOUS_WORKERS = 2;
 
 
 const update = () => {
@@ -27,7 +27,7 @@ const update = () => {
               callback(null);
             })
             .catch(error => {
-              console.log('Error updating player ' + player.attributes.name + '\n' + error)
+              console.log('Error updating player ' + player.attributes.name + '\n' + error.response.body)
             });
         });
       });

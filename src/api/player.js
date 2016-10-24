@@ -65,7 +65,7 @@ export default ({ config, bs }) => {
     Player(bs)
       .fetchAll()
       .then(model => res.status(200).json(format(model)))
-      .catch(err => res.status(500).json({'error': {'message': 'Error fetching player: ' + err}}));
+      .catch(err => res.status(500).json({'error': {'message': 'Error fetching players'}}));
   });
 
   api.get('/:platform/:id/', (req, res) => {
@@ -100,9 +100,9 @@ export default ({ config, bs }) => {
           .set(ranks)
           .save()
           .then(success => res.status(200).json({'success': {'message': 'Player updated'}}))
-          .catch(err => res.status(500).json({'error': {'message': err}}));
+          .catch(err => res.status(500).json({'error': {'message': 'Error updating player ' + err}}));
       })
-      .catch(err => res.status(500).json({'error': {'message': err}}));
+      .catch(err => res.status(500).json({'error': {'message': 'Error fetching player ', 'response': err}}));
   });
 
 

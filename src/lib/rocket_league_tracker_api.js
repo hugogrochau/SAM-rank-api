@@ -20,7 +20,7 @@ async function getStats(platform, id, apiKey) {
     });
     return _.omit(response.body, 'tracking');
   } catch (err) {
-    return err.response.body
+    throw new Error(err.response.body);
   }
 };
 
