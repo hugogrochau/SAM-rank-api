@@ -1,8 +1,8 @@
 /dist
 /logs
-/npm-debug.log
 /node_modules
 .DS_Store
 .idea
 yarn.lock
 database.json
+npm-debug.log
