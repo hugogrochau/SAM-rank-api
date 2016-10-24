@@ -19,6 +19,7 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+
 --
 -- Name: constants; Type: TABLE; Schema: public; Owner: samranking
 --
@@ -31,10 +32,8 @@ CREATE TABLE constants (
 );
 
 
-ALTER TABLE constants OWNER TO samranking;
-
 --
--- Name: player; Type: TABLE; Schema: public; Owner: samranking
+-- Name: player; Type: TABLE; Schema: public
 --
 
 CREATE TABLE player (
@@ -62,10 +61,8 @@ CREATE TABLE player (
 );
 
 
-ALTER TABLE player OWNER TO samranking;
-
 --
--- Name: player_pkey; Type: CONSTRAINT; Schema: public; Owner: samranking
+-- Name: player_pkey; Type: CONSTRAINT; Schema: public
 --
 
 ALTER TABLE ONLY player
