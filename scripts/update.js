@@ -5,7 +5,7 @@ const retry = require('async/retry');
 const API = 'http://127.0.0.1:8080/api/v1/';
 
 const SIMULTANEOUS_WORKERS = 4;
-const RATE = 1; // requests per second
+const RATE = 0.25; // requests per second
 const RETRY_ATTEMPTS = 5;
 
 const update = () => {
