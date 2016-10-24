@@ -22,7 +22,10 @@ const update = () => {
 
 let q = queue((player, callback) => {
   console.log('Starting update for player: ' + player.attributes.name);
-  got(API + 'player/' + player.attributes.platform + '/' + player.id + '/update')
+  let id = player.attributes.platform == 2 ? player.attributes.name : player.id; // xone doesn't work with numeric id
+
+  console.log(API + 'player/' + player.attributes.platform + '/' + id + '/update');
+  got(API + 'player/' + player.attributes.platform + '/' + id + '/update')
     .then(response => {
       console.log('Updated player: ' + player.attributes.name);
       callback();
