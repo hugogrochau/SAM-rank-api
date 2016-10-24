@@ -21,7 +21,7 @@ SET default_with_oids = false;
 
 
 --
--- Name: constants; Type: TABLE; Schema: public; Owner: samranking
+-- Name: constants; Type: TABLE; Schema: public
 --
 
 CREATE TABLE constants (
