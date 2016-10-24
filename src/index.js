@@ -7,7 +7,6 @@ import bookshelf from 'bookshelf';
 import api from './api';
 import fileConfig from './config.json';
 import databaseConfig from './database.json';
-import getRanks from './lib/rocket_league_tracker_api';
 import _ from 'lodash';
 
 

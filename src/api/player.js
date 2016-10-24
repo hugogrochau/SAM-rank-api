@@ -29,7 +29,8 @@ const rankMap = {
   'Prospect Elite': 4,
   'Prospect III': 3,
   'Prospect II': 2,
-  'Prospect I': 1
+  'Prospect I': 1,
+  'Unranked': 0
 };
 
 const divisionMap = {
@@ -46,9 +47,8 @@ const getRanksFromStats = stats => {
     let playlist = playlistMap[stat.label];
     if (playlist) {
       ranks[playlist] = stat.value;
-
       // extract division and rank
-      let regex = /\[(\w{1,2})\]\s(.*)/;
+      let regex = /\[(\w{1,3})\]\s(.*)/;
       let matched = regex.exec(stat.subLabel);
       ranks[playlist+'_division'] = divisionMap[matched[1]];
       ranks[playlist+'_tier'] = rankMap[matched[2]];
@@ -100,10 +100,35 @@ export default ({ config, bs }) => {
           .set(ranks)
           .save()
           .then(success => res.status(200).json({'success': {'message': 'Player updated'}}))
-          .catch(err => res.status(500)({'error': {'message': err}}));
+          .catch(err => res.status(500).json({'error': {'message': err}}));
       })
       .catch(err => res.status(500).json({'error': {'message': err}}));
+  });
 
+
+  api.get('/:platform/:id/add', (req, res) => {
+    let platform = getPlatformId(req.params.platform);
+    if (platform == -1) {
+      res.status(500).json({'error': {'message': 'Invalid platform'}});
+    }
+
+    let rltPlatform = 3 - platform; // rocket league tracker platform conversion
+
+    getStats(rltPlatform, req.params.id, config.rocketLeagueTrackerApiKey)
+      .then(response => {
+        let ranks = getRanksFromStats(response.stats);
+        let attributes = Object.assign(ranks,
+          {
+            'id': response.platformUserId,
+            'name': response.platformUserHandle,
+            'platform': platform
+          });
+        Player(bs)
+          .save(attributes, {'method': 'insert'})
+          .then(success => res.status(200).json({'success': {'message': 'Player added'}}))
+          .catch(err => res.status(500).json({'error': {'message': err}}));
+      })
+      .catch(err => res.status(500).json({'error': {'message': err}}));
   });
 
   return api;
