@@ -11,7 +11,7 @@ const format = (obj) =>  mapper.map(obj, 'player', {'enableLinks': false});
 /**
  * @apiDefine PlayerNotFoundError
  *
- * @apiError PlayerNotFound The id of the Player was not found.
+ * @apiError PlayerNotFound The Player could not be found
  *
  * @apiErrorExample PlayerNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
@@ -83,7 +83,7 @@ api.get('/', (req, res) => {
 });
 
 /**
- * @api {get} /player/:platform/:id Request Player information
+ * @api {get} /player/:platform/:id Get Player information
  * @apiName GetPlayer
  * @apiGroup Player
  *
@@ -198,7 +198,7 @@ api.get('/:platform/:id/update', (req, res) => {
 });
 
 /**
- * @api {get} /player/:platform/:id/add Add Player to database
+ * @api {get} /player/:platform/:id/add Add Player
  * @apiName AddPlayer
  * @apiGroup Player
  *
@@ -262,7 +262,7 @@ api.get('/:platform/:id/add', (req, res) => {
 });
 
 /**
- * @api {get} /player/:platform/:id/delete Delete Player from database
+ * @api {get} /player/:platform/:id/delete Delete Player
  * @apiName DeletePlayer
  * @apiGroup Player
  *
