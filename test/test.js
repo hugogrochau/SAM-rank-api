@@ -1,4 +1,3 @@
-import fs from 'fs';
 import app from '../src';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
@@ -18,7 +17,6 @@ describe('/api/v1/', function() {
             done();
           });
       });
-
   });
 
   it('Should connect', done => {
@@ -29,7 +27,9 @@ describe('/api/v1/', function() {
         done();
       });
   });
+
   describe('/player/', () => {
+
     it('Should get all players', done => {
       chai.request(app)
         .get('/api/v1/player')
@@ -38,7 +38,9 @@ describe('/api/v1/', function() {
           done();
         });
     });
+
     describe('/player/:platform/:id/add', () => {
+
       it('Should add a player', done => {
         chai.request(app)
           .get(`/api/v1/player/0/${testSteamId}/add`)
@@ -47,6 +49,7 @@ describe('/api/v1/', function() {
             done();
           });
       }).timeout(5000);
+
       it('Should prevent duplicate addition', done => {
         chai.request(app)
           .get(`/api/v1/player/0/${testSteamId}/add`)
@@ -56,7 +59,9 @@ describe('/api/v1/', function() {
           });
       }).timeout(5000);
     });
+
     describe('/player/:platform/:id/', () => {
+
       it('Should get a player', done => {
         chai.request(app)
           .get(`/api/v1/player/0/${testSteamId}/`)
@@ -67,7 +72,9 @@ describe('/api/v1/', function() {
           });
       });
     });
+
     describe('/player/:platform/:id/delete', () => {
+
       it('Should delete a player', done => {
         chai.request(app)
           .get(`/api/v1/player/0/${testSteamId}/delete`)
@@ -76,6 +83,7 @@ describe('/api/v1/', function() {
             done();
           });
       });
+
       it('Should have deleted the player', done => {
         chai.request(app)
           .get(`/api/v1/player/0/${testSteamId}/`)
@@ -84,6 +92,7 @@ describe('/api/v1/', function() {
             done();
           });
       });
+
       it('Should not delete a player that does not exist', done => {
         chai.request(app)
           .get(`/api/v1/player/0/${testSteamId}/delete`)
@@ -92,8 +101,7 @@ describe('/api/v1/', function() {
             done();
           });
       });
+
     });
   });
 });
-
-

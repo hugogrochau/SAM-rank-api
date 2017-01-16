@@ -252,7 +252,7 @@ api.get('/:platform/:id/add', (req, res) => {
         .save(attributes, {method: 'insert'})
         .then(success => okMsg(res, 'Player added'))
         .catch(err => {
-          if (err.code == '23505') {
+          if (err.code == '23505' || err.errno == '19') {
             return errMsg(res, 409, 'DuplicatePlayer', 'Player already added');
           }
           return errMsg(res, 500, 'Database', err);

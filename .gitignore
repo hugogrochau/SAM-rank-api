@@ -7,3 +7,4 @@
 .env
 yarn.lock
 npm-debug.log
+*.sqlite3
