@@ -1,8 +1,11 @@
 import http from 'http';
 import express from 'express';
-import cors from 'cors';
+import expressValidator from 'express-validator';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import dotenv from 'dotenv'
+import validators from './lib/validators';
+
 import api from './api';
 
 dotenv.config();
@@ -18,16 +21,22 @@ app.use(bodyParser.json({
 	limit : "100kb"
 }));
 
+app.use(expressValidator({
+  customValidators: validators
+}));
+
 // internal middleware
 // app.use(middleware);
 
 // api router
 app.use('/api/v1', api);
 
-app.server.listen(process.env.PORT || 8080);
+// no need to start a server when testing
+if (process.env.NODE_ENV !== 'test') {
+  app.server.listen(process.env.PORT || 8080);
 
-console.log(`Started on port ${app.server.address().port}`);
-
+  console.log(`Started on port ${app.server.address().port}`);
+}
 
 
 export default app;

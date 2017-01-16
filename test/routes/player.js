@@ -32,16 +32,34 @@ export default ( {app, chai} ) => {
             done();
           });
       }).timeout(5000);
+
+      it('Should recognize an invalid platform', done => {
+        chai.request(app)
+          .get(`/api/v1/player/nintendowii/${testSteamId}/add`)
+          .end( (err, res) => {
+            res.should.have.status(400);
+            done();
+          });
+      });
     });
 
     describe('/player/:platform/:id/', () => {
 
       it('Should get a player', done => {
         chai.request(app)
-          .get(`/api/v1/player/0/${testSteamId}/`)
-          .end( (err, res) => {
+          .get(`/api/v1/player/0/${testSteamId}`)
+          .end((err, res) => {
             res.should.have.status(200);
             res.body.data.id.should.equal(testSteamId);
+            done();
+          });
+      });
+
+      it('Should recognize an invalid platform', done => {
+        chai.request(app)
+          .get(`/api/v1/player/nintendowii/${testSteamId}`)
+          .end( (err, res) => {
+            res.should.have.status(400);
             done();
           });
       });
@@ -60,7 +78,7 @@ export default ( {app, chai} ) => {
 
       it('Should have deleted the player', done => {
         chai.request(app)
-          .get(`/api/v1/player/0/${testSteamId}/`)
+          .get(`/api/v1/player/0/${testSteamId}`)
           .end( (err, res) => {
             res.should.have.status(404);
             done();

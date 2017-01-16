@@ -3,7 +3,7 @@ import Player from '../models/player';
 import Mapper from 'jsonapi-mapper'
 import { getPlatformId, getRanksFromStats } from '../lib/util';
 import { getStats } from '../lib/rocket_league_tracker_api'
-import { errMsg, okMsg } from '../lib/util';
+import { validateIdWithPlatform, errMsg, okMsg } from '../lib/util';
 
 const mapper = new Mapper.Bookshelf();
 const format = (obj) =>  mapper.map(obj, 'player', {'enableLinks': false});
@@ -23,15 +23,15 @@ const format = (obj) =>  mapper.map(obj, 'player', {'enableLinks': false});
  */
 
 /**
- * @apiDefine InvalidPlatformError
+ * @apiDefine InputError
  *
- * @apiError InvalidPlatform The platform is invalid
+ * @apiError Input The input is invalid
  *
- * @apiErrorExample InvalidPlatform Error-Response:
+ * @apiErrorExample Input Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "error": {
- *         "message": "Invalid platform"
+ *         "message": { /* validation errors *\/}
  *       }
  *     }
  */
@@ -126,15 +126,23 @@ api.get('/', (req, res) => {
  *
  * @apiUse PlayerNotFoundError
  *
- * @apiUse InvalidPlatformError
+ * @apiUse InputError
  *
  * @apiUse DatabaseError
  */
 api.get('/:platform/:id/', (req, res) => {
+
+  req.checkParams('platform', 'Invalid platform').isValidPlatform();
+  validateIdWithPlatform(req, req.params.platform);
+
+  req.getValidationResult().then( result => {
+    if (!result.isEmpty()) {
+      return errMsg(res, 400, 'InputError', result.mapped());
+    }
+  });
+
   let platform = getPlatformId(req.params.platform);
-  if (platform == -1) {
-    errMsg(res, 400, 'InvalidPlatform', 'Invalid platform');
-  }
+
   new Player({
     'id': req.params.id.toLowerCase(),
     'platform': platform
@@ -147,61 +155,19 @@ api.get('/:platform/:id/', (req, res) => {
 });
 
 /**
- * @api {get} /player/:platform/:id/update Update Player information
- * @apiName UpdatePlayer
- * @apiGroup Player
- *
- * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
- * @apiParam {String} id Player's unique id.
- *
- * @apiSuccess {Object} success Success message
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        "success": {
- *          "message": "Player updated"
- *        }
- *     }
- *
- * @apiUse ExternalAPIError
- *
- * @apiUse PlayerNotFoundError
- *
- * @apiUse InvalidPlatformError
- *
- * @apiUse DatabaseError
- */
-api.get('/:platform/:id/update', (req, res) => {
-  let platform = getPlatformId(req.params.platform);
-  if (platform == -1) {
-    errMsg(res, 400, 'InvalidPlatform', 'Invalid platform');
-  }
-
-  let rltPlatform = 3 - platform; // rocket league tracker platform conversion
-
-  getStats(rltPlatform, req.params.id, process.env.TRACKER_API_KEY)
-    .then(response => {
-      let ranks = getRanksFromStats(response.stats);
-      new Player({'id': response.platformUserId})
-        .set({
-          'name': response.platformUserHandle,
-          'platform': platform
-        })
-        .set(ranks)
-        .save()
-        .then(success => okMsg(res, 'Player updated'))
-        .catch(Player.NotFoundError, err => errMsg(res, 404, 'PlayerNotFound', 'Player not found'))
-        .catch(err => errMsg(res, 500, 'Database', err));
-    })
-    .catch(err => errMsg(res, 500, 'ExternalAPI', 'Error fetching player from API'));
-});
-
-/**
  * @api {get} /player/:platform/:id/add Add Player
  * @apiName AddPlayer
  * @apiGroup Player
  *
+  req.checkParams('platform', 'Invalid platform').isValidPlatform();
+  validateIdWithPlatform(req, req.params.platform);
+
+  req.getValidationResult().then( result => {
+    if (!result.isEmpty()) {
+      return errMsg(res, 400, 'InputError', result.mapped());
+    }
+  });
+
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
  * @apiParam {String} id Player's unique id.
  *
@@ -229,13 +195,20 @@ api.get('/:platform/:id/update', (req, res) => {
  *
  * @apiUse DatabaseError
  *
- * @apiUse InvalidPlatformError
+ * @apiUse InputError
  */
 api.get('/:platform/:id/add', (req, res) => {
+
+  req.checkParams('platform', 'Invalid platform').isValidPlatform();
+  validateIdWithPlatform(req, req.params.platform);
+
+  req.getValidationResult().then( result => {
+    if (!result.isEmpty()) {
+      return errMsg(res, 400, 'Input', result.mapped());
+    }
+  });
+
   let platform = getPlatformId(req.params.platform);
-  if (platform == -1) {
-    errMsg(res, 400, 'InvalidPlatform', 'Invalid platform');
-  }
 
   let rltPlatform = 3 - platform; // rocket league tracker platform conversion
 
@@ -262,12 +235,70 @@ api.get('/:platform/:id/add', (req, res) => {
 });
 
 /**
+ * @api {get} /player/:platform/:id/update Update Player information
+ * @apiName UpdatePlayer
+ * @apiGroup Player
+ *
+ * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
+ * @apiParam {String} id Player's unique id.
+ *
+ * @apiSuccess {Object} success Success message
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *        "success": {
+ *          "message": "Player updated"
+ *        }
+ *     }
+ *
+ * @apiUse ExternalAPIError
+ *
+ * @apiUse PlayerNotFoundError
+ *
+ * @apiUse InputError
+ *
+ * @apiUse DatabaseError
+ */
+api.get('/:platform/:id/update', (req, res) => {
+
+  req.checkParams('platform', 'Invalid platform').isValidPlatform();
+  validateIdWithPlatform(req, req.params.platform);
+
+  req.getValidationResult().then( result => {
+    if (!result.isEmpty()) {
+      return errMsg(res, 400, 'InputError', result.mapped());
+    }
+  });
+
+  let platform = getPlatformId(req.params.platform);
+
+  let rltPlatform = 3 - platform; // rocket league tracker platform conversion
+
+  getStats(rltPlatform, req.params.id, process.env.TRACKER_API_KEY)
+    .then(response => {
+      let ranks = getRanksFromStats(response.stats);
+      new Player({'id': response.platformUserId})
+        .set({
+          'name': response.platformUserHandle,
+          'platform': platform
+        })
+        .set(ranks)
+        .save()
+        .then(success => okMsg(res, 'Player updated'))
+        .catch(Player.NotFoundError, err => errMsg(res, 404, 'PlayerNotFound', 'Player not found'))
+        .catch(err => errMsg(res, 500, 'Database', err));
+    })
+    .catch(err => errMsg(res, 500, 'ExternalAPI', 'Error fetching player from API'));
+});
+
+/**
  * @api {get} /player/:platform/:id/delete Delete Player
  * @apiName DeletePlayer
  * @apiGroup Player
  *
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
- * @apiParam {String} id Player's unique id.
+ * @apiParam {String} id Player's unique id
  *
  * @apiSuccess {Object} success Success message
  *
@@ -282,13 +313,20 @@ api.get('/:platform/:id/add', (req, res) => {
  *
  * @apiUse DatabaseError
  *
- * @apiUse InvalidPlatformError
+ * @apiUse InputError
  */
 api.get('/:platform/:id/delete', (req, res) => {
+
+  req.checkParams('platform', 'Invalid platform').isValidPlatform();
+  validateIdWithPlatform(req, req.params.platform);
+
+  req.getValidationResult().then( result => {
+    if (!result.isEmpty()) {
+      return errMsg(res, 400, 'InputError', result.mapped());
+    }
+  });
+
   let platform = getPlatformId(req.params.platform);
-  if (platform == -1) {
-    errMsg(res, 400, 'InvalidPlatform', 'Invalid platform');
-  }
 
   new Player({
     'id': req.params.id,

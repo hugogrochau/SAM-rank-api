@@ -1,10 +1,12 @@
 import { version } from '../../package.json';
 import { Router } from 'express';
-import player from './player';
+import playerRoute from './player';
+// import teamRoute from './team';
 
 const api = Router();
 
-api.use('/player', player);
+api.use('/player', playerRoute);
+// api.use('/team', teamRoute);
 
 // perhaps expose some API metadata at the root
 api.get('/', (req, res) => {

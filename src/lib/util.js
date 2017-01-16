@@ -83,6 +83,21 @@ const getPlatformId = (platformString) => {
   return -1;
 };
 
+const validateIdWithPlatform = (req, platform, column = 'id') => {
+  platform = getPlatformId(platform);
+  switch (platform) {
+    //steam
+    case 0:
+      return req.checkParams(column, 'Invalid Steam 64 ID').isValidSteamId();
+    //psn
+    case 1:
+      return req.checkParams(column, 'Invalid PSN ID').isValidPSNId();
+    //xbox
+    case 2:
+      return req.checkParams(column, 'Invalid Xbox gamertag').isValidXboxId();
+  }
+};
+
 const errMsg = (res, status, code, message) => {
   let jsonMessage = {
     'error': {
@@ -102,4 +117,4 @@ const okMsg = (res, message) => {
   return res.status(200).json(jsonMessage);
 };
 
-export { toRes, getPlatformId, getRanksFromStats, errMsg, okMsg};
+export { toRes, getRanksFromStats, getPlatformId, validateIdWithPlatform, errMsg, okMsg};
