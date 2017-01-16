@@ -4,6 +4,6 @@
 /apidoc
 .DS_Store
 .idea
+.env
 yarn.lock
-database.json
 npm-debug.log

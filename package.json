@@ -8,7 +8,7 @@
     "build": "babel src -s -D -d dist",
     "start": "node dist",
     "prestart": "npm run -s build",
-    "test": "mocha --compilers js:babel-register --reporter spec",
+    "test": "NODE_ENV=test mocha --compilers js:babel-register --reporter spec",
     "docs": "apidoc -i src/api -o apidoc/"
   },
   "apidoc": {
@@ -17,7 +17,7 @@
     "description": "API for the South American rocket league ranking",
     "apidoc": {
       "title": "API for the South American rocket league ranking",
-      "url" : "https://127.0.0.1:8080/api/v1/"
+      "url": "https://127.0.0.1:8080/api/v1/"
     }
   },
   "eslintConfig": {
@@ -46,6 +46,7 @@
     "bookshelf": "^0.10.2",
     "compression": "^1.5.2",
     "cors": "^2.7.1",
+    "dotenv": "^4.0.0",
     "express": "^4.13.3",
     "got": "^6.5.0",
     "jsonapi-mapper": "^1.0.0-beta.8",
@@ -62,9 +63,11 @@
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.18.0",
     "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
     "eslint": "^3.1.1",
     "mocha": "^3.2.0",
-    "nodemon": "^1.9.2"
+    "nodemon": "^1.9.2",
+    "sqlite3": "^3.1.8"
   },
   "keywords": [
     "south",

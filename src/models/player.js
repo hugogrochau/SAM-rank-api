@@ -1,11 +1,10 @@
-export default (bs, args) => {
+import bs from '../db.js';
 
-  let Player = bs.Model.extend({
+const Player = bs.Model.extend({
 
-    tableName: 'player',
-    hasTimestamps: ['created_at', 'last_update']
+  tableName: 'player',
+  hasTimestamps: ['created_at', 'last_update']
 
-  });
+});
 
-  return new Player(args);
-};
+export default Player;

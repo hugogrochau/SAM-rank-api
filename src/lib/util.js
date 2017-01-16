@@ -93,7 +93,7 @@ const errMsg = (res, status, code, message) => {
   return res.status(status).json(jsonMessage);
 };
 
-const okMsg = (message) => {
+const okMsg = (res, message) => {
   let jsonMessage = {
     'success': {
       'message': 'Player added'
