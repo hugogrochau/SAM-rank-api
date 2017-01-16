@@ -1,32 +1,6 @@
-import app from '../src';
-import chai from 'chai';
-import chaiHttp from 'chai-http';
-import bs from '../src/db.js';
-chai.use(chaiHttp);
-const should = chai.should();
+export default ( {app, chai} ) => {
 
-let testSteamId = '76561198048735069';
-
-describe('/api/v1/', function() {
-
-  before( done => {
-    bs.knex.migrate.rollback()
-      .then(function() {
-        bs.knex.migrate.latest()
-          .then(function() {
-            done();
-          });
-      });
-  });
-
-  it('Should connect', done => {
-    chai.request(app)
-      .get('/api/v1/')
-      .end( (err, res) => {
-        res.should.have.status(200);
-        done();
-      });
-  });
+  let testSteamId = '76561198048735069';
 
   describe('/player/', () => {
 
@@ -104,4 +78,5 @@ describe('/api/v1/', function() {
 
     });
   });
-});
+}
+
