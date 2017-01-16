@@ -1,9 +1,10 @@
 
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('player', function(table) {
-    table.string('id').primary().unique();
+    table.string('id');
+    table.integer('platform');
+    table.primary(['id', 'platform']);
     table.string('name').notNullable();
-    table.integer('platform').notNullable();
     table.integer('1v1');
     table.integer('1v1_division');
     table.integer('1v1_games_played');
