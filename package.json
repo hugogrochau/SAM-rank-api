@@ -9,7 +9,8 @@
     "start": "node dist",
     "prestart": "npm run -s build",
     "test": "NODE_ENV=test mocha --compilers js:babel-register --reporter spec",
-    "docs": "apidoc -i src/api -o apidoc/"
+    "docs": "apidoc -i src/api -o apidoc/",
+    "migrate": "knex migrate:latest --env development"
   },
   "apidoc": {
     "name": "sam-rank-api",
