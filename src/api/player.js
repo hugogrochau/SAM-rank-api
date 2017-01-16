@@ -88,7 +88,7 @@ api.get('/', (req, res) => {
  * @apiGroup Player
  *
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
- * @apiParam {String} id Player's unique ID.
+ * @apiParam {String} id Player's unique id.
  *
  * @apiSuccess {Object} data Player data
  *
@@ -152,7 +152,7 @@ api.get('/:platform/:id/', (req, res) => {
  * @apiGroup Player
  *
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
- * @apiParam {String} id Player's unique ID.
+ * @apiParam {String} id Player's unique id.
  *
  * @apiSuccess {Object} success Success message
  *
@@ -203,7 +203,7 @@ api.get('/:platform/:id/update', (req, res) => {
  * @apiGroup Player
  *
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
- * @apiParam {String} id Player's unique ID.
+ * @apiParam {String} id Player's unique id.
  *
  * @apiSuccess {Object} success Success message
  *
@@ -267,7 +267,7 @@ api.get('/:platform/:id/add', (req, res) => {
  * @apiGroup Player
  *
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
- * @apiParam {String} id Player's unique ID.
+ * @apiParam {String} id Player's unique id.
  *
  * @apiSuccess {Object} success Success message
  *
