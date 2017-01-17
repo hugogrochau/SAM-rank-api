@@ -1,5 +1,5 @@
-import { Router } from 'express';
+import { Router } from 'express'
 
-let routes = Router();
+let routes = Router()
 
-export default routes;
+export default routes

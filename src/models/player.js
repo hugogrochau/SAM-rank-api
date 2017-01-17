@@ -1,20 +1,20 @@
-import bs from '../db.js';
+import bs from '../db.js'
 import Team from './team'
 
 class Player extends bs.Model {
 
   get tableName() {
-    return 'player';
+    return 'player'
   }
 
   get hasTimestamps() {
-    return ['created_at', 'last_update'];
+    return ['created_at', 'last_update']
   }
 
   team() {
-    return this.belongsTo(Team);
+    return this.belongsTo(Team)
   }
 
 }
 
-export default Player;
+export default Player
