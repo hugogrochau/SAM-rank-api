@@ -5,7 +5,7 @@
   "main": "dist",
   "scripts": {
     "dev": "nodemon -w src --exec \"babel-node src\"",
-    "build": "babel src -s -D -d dist",
+    "build": "babel src -s -D -d dist --ignore node_modules",
     "start": "node dist",
     "prestart": "npm run -s build",
     "test": "NODE_ENV=test mocha --compilers js:babel-register --reporter spec",
