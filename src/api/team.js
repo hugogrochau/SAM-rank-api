@@ -73,7 +73,7 @@ const api = Router();
  */
 api.get('/', (req, res) => {
   new Team()
-    .fetchAll()
+    .fetchAll({ withRelated: 'players' })
     .then(model => res.jsend.success(model.toJSON()))
     .catch(err => res.status(500).jsend.error('Database error', 'Database', err));
 });
