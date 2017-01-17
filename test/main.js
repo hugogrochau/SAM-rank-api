@@ -5,29 +5,23 @@ import teamTest from './routes/team.js';
 
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 chai.should();
 
-
 describe('/api/v1', () => {
 
-  before( done => {
-    bs.knex.migrate.rollback()
-      .then(() => {
-        bs.knex.migrate.latest()
-          .then(() => {
-            done();
-          });
-      });
+  before( () => {
+    return bs.knex.migrate.rollback().then( () => {
+      return bs.knex.migrate.latest()
+    });
   });
 
-  it('Should connect', done => {
-    chai.request(app)
-      .get('/api/v1')
-      .end((err, res) => {
-        res.should.have.status(200);
-        done();
-      });
+  it('Should connect', () => {
+    return chai.request(app)
+      .get('/api/v1').should.eventually.have.property('status', 200)
   });
 
   playerTest({ app, chai });

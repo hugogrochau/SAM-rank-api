@@ -12,9 +12,9 @@ import { validateIdWithPlatform } from '../lib/util';
  * @apiErrorExample PlayerNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
  *     {
- *       "error": {
- *         "message": "Player not found"
- *       }
+ *       "status": "error",
+ *       "message": "Player not found",
+ *       "code": "PlayerNotFound"
  *     }
  */
 
@@ -26,9 +26,9 @@ import { validateIdWithPlatform } from '../lib/util';
  * @apiErrorExample TeamNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
  *     {
- *       "error": {
- *         "message": "Team not found"
- *       }
+ *       "status": "error",
+ *       "message": "Team not found",
+ *       "code": "TeamNotFound"
  *     }
  */
 
@@ -40,24 +40,34 @@ import { validateIdWithPlatform } from '../lib/util';
  * @apiErrorExample Input Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *       "error": {
- *         "message": { /* validation errors *\/}
+ *       "status": "error",
+ *       "message": "Input error",
+ *       "code": "Input",
+ *       "data": {
+ *         "playerId": {
+ *           "param": "playerId",
+ *           "msg": "Invalid Steam 64 ID",
+ *           "value": "banana"
+ *         }
  *       }
  *     }
  */
 
-/**
+ /**
  * @apiDefine DatabaseError
  *
  * @apiError Database There was an error with the application database
  *
  *  @apiErrorExample Database Error-Response:
- *      HTTP/1.1 500 Internal Server Error
- *      {
- *        "error": {
- *          "message": "Database error message"
- *        }
- *      }
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "status": "error",
+ *       "message": "Database error",
+ *       "code": "Database",
+ *       "data": {
+ *          /* database error data *\/
+ *       }
+ *     }
  */
 
 const api = Router();
@@ -163,8 +173,9 @@ api.post('/add', (req, res) => {
       .catch(err => res.status(500).jsend.error('Database error', 'Database', err));
   });
 });
+
 /**
- * @api {get} /team/:id/add-player/:player-platform/:player-id Add Player to  Team
+ * @api {get} /team/:id/add-player/:player-platform/:player-id Remove Player from Team
  * @apiName AddPlayerToTeam
  * @apiGroup Team
  *
@@ -172,15 +183,7 @@ api.post('/add', (req, res) => {
  * @apiParam {String="0","1","2","steam","ps4","xbox"} playerPlatform Player's platform
  * @apiParam {String} playerId Player's unique id.
  *
- * @apiSuccess {Object} success Success message
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        "success": {
- *          "message": "Team added"
- *        }
- *     }
+ * @apiSuccess {Object} player Player object
  *
  * @apiUse InputError
  *
@@ -202,12 +205,50 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
     }
 
     new Player({ id: req.params['playerId'], platform: req.params['playerPlatform'] })
-      .save({team_id: req.params['id']})
+      .save({ team_id: req.params['id'] })
       .then(model => {
         res.jsend.success(model.toJSON())
       })
-      .catch(Player.NotFoundError, err => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
+      .catch(Player.NoRowsUpdatedError, err => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
       .catch(err => res.status(500).jsend.error('Database error', 'Database', err));
+  });
+});
+
+/**
+ * @api {get} /team/:id/remove-player/:player-platform/:player-id Remove Player from Team
+ * @apiName RemovePlayerFromTeam
+ * @apiGroup Team
+ *
+ * @apiParam {Number} id Team's unique id
+ * @apiParam {String="0","1","2","steam","ps4","xbox"} playerPlatform Player's platform
+ * @apiParam {String} playerId Player's unique id.
+ *
+ * @apiSuccess {Object} player Player object
+ *
+ * @apiUse InputError
+ *
+ * @apiUse PlayerNotFoundError
+ *
+ * @apiUse TeamNotFoundError
+ *
+ * @apiUse DatabaseError
+ */
+api.get('/:id/remove-player/:playerPlatform/:playerId', (req, res) => {
+
+  req.checkParams('id', 'Invalid Team id').isInt({min: 1});
+  req.checkParams('playerPlatform', 'Invalid platform').isValidPlatform();
+  validateIdWithPlatform(req, req.params['playerPlatform'], 'playerId');
+
+  req.getValidationResult().then( result => {
+    if (!result.isEmpty()) {
+      return res.status(400).jsend.error('Input error', 'Input', result.mapped());
+    }
+
+    new Player({ id: req.params['playerId'], platform: req.params['playerPlatform'] })
+      .save({ team_id: null })
+      .then(model => {
+        res.jsend.success(model.toJSON())
+      })
   });
 });
 
@@ -219,15 +260,6 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
  * @apiParam {Number} id Team's unique id.
  *
  * @apiSuccess {Object} success Success message
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        "success": {
- *          "message": "Team deleted"
- *        }
- *     }
- *
  *
  * @apiUse DatabaseError
  *

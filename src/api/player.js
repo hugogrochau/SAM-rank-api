@@ -13,9 +13,9 @@ import { validateIdWithPlatform } from '../lib/util';
  * @apiErrorExample PlayerNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
  *     {
- *       "error": {
- *         "message": "Player not found"
- *       }
+ *       "status": "error",
+ *       "message": "Player not found",
+ *       "code": "PlayerNotFound"
  *     }
  */
 
@@ -27,8 +27,15 @@ import { validateIdWithPlatform } from '../lib/util';
  * @apiErrorExample Input Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
- *       "error": {
- *         "message": { /* validation errors *\/}
+ *       "status": "error",
+ *       "message": "Input error",
+ *       "code": "Input",
+ *       "data": {
+ *         "playerId": {
+ *           "param": "playerId",
+ *           "msg": "Invalid Steam 64 ID",
+ *           "value": "banana"
+ *         }
  *       }
  *     }
  */
@@ -39,12 +46,15 @@ import { validateIdWithPlatform } from '../lib/util';
  * @apiError Database There was an error with the application database
  *
  *  @apiErrorExample Database Error-Response:
- *      HTTP/1.1 500 Internal Server Error
- *      {
- *        "error": {
- *          "message": "Database error message"
- *        }
- *      }
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "status": "error",
+ *       "message": "Database error",
+ *       "code": "Database",
+ *       "data": {
+ *          /* database error data *\/
+ *       }
+ *     }
  */
 
 /**
@@ -55,8 +65,11 @@ import { validateIdWithPlatform } from '../lib/util';
  * @apiErrorExample ExternalAPI Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
- *       "error": {
- *         "message": "Error fetching player from external API"
+ *       "status": "error",
+ *       "message": "Error fetching player from external API",
+ *       "code": "ExternalAPI",
+ *       "data": {
+ *          /* external API error data *\/
  *       }
  *     }
  */
@@ -173,12 +186,10 @@ api.get('/:platform/:id/', (req, res) => {
  * @apiErrorExample DuplicatePlayer Error-Response:
  *     HTTP/1.1 409 Conflict
  *     {
- *       "error": {
- *         "message": "Player already added"
- *       }
+ *       "status": "error",
+ *       "message": "Player already added",
+ *       "code": "DuplicatePlayer"
  *     }
- *
- * @apiUse ExternalAPIError
  *
  * @apiUse DatabaseError
  *
@@ -220,15 +231,7 @@ api.get('/:platform/:id/add', (req, res) => {
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
  * @apiParam {String} id Player's unique id.
  *
- * @apiSuccess {Object} success Success message
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        "success": {
- *          "message": "Player updated"
- *        }
- *     }
+ * @apiSuccess {Object} player Player object
  *
  * @apiUse ExternalAPIError
  *
@@ -262,11 +265,11 @@ api.get('/:platform/:id/update', (req, res) => {
           })
           .set(ranks)
           .save()
-          .then(model => res.jsend.success('Player updated'))
+          .then(model => res.jsend.success(model.toJSON()))
           .catch(Player.NotFoundError, err => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
           .catch(err => res.status(500).jsend.error('Database error', 'Database', err));
       })
-      .catch(err => res.status(500).jsend.error('Error fetching player from API', 'ExternalAPI'));
+      .catch(err => res.status(500).jsend.error('Error fetching player from API', 'ExternalAPI', res.body.json()));
   });
 });
 
@@ -283,9 +286,8 @@ api.get('/:platform/:id/update', (req, res) => {
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *        "success": {
- *          "message": "Player deleted"
- *        }
+ *       "status": "success",
+ *       "message": "Player deleted"
  *     }
  *
  *
