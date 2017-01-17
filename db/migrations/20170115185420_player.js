@@ -23,6 +23,8 @@ exports.up = function(knex, Promise) {
     table.integer('3v3s_tier');
     table.timestamp('created_at');
     table.timestamp('last_update');
+    table.integer('team_id').unsigned();
+    table.foreign('team_id').references('team.id');
   })
 };
 
