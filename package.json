@@ -10,7 +10,8 @@
     "prestart": "npm run -s build",
     "test": "NODE_ENV=test mocha --compilers js:babel-register --reporter spec",
     "docs": "apidoc -i src/api -o apidoc/",
-    "migrate": "knex migrate:latest --env development"
+    "migrate": "knex migrate:latest --env development",
+    "lint": "eslint src test"
   },
   "apidoc": {
     "name": "sam-rank-api",
@@ -19,20 +20,6 @@
     "apidoc": {
       "title": "API for the South American rocket league ranking",
       "url": "https://127.0.0.1:8080/api/v1/"
-    }
-  },
-  "eslintConfig": {
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "ecmaVersion": 7,
-      "sourceType": "module"
-    },
-    "env": {
-      "node": true
-    },
-    "rules": {
-      "no-console": 0,
-      "no-unused-vars": 1
     }
   },
   "repository": {

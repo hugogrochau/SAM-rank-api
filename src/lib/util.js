@@ -1,5 +1,3 @@
-import Mapper from 'jsonapi-mapper'
-
 const playlistMap = {
   'Ranked Duel 1v1': '1v1',
     'Ranked Doubles 2v2': '2v2',

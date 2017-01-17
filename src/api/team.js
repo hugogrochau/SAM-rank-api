@@ -130,7 +130,7 @@ api.get('/:id', (req, res) => {
     })
       .fetch({ require: true, withRelated: 'players' })
       .then(model => res.jsend.success(model.toJSON()))
-      .catch(Team.NotFoundError, err => res.status(404).jsend.error('Team not found', 'TeamNotFound'))
+      .catch(Team.NotFoundError, () => res.status(404).jsend.error('Team not found', 'TeamNotFound'))
       .catch(err => res.status(500).jsend.error('Database error', 'Database', err))
   })
 })
@@ -199,7 +199,7 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
       .then(model => {
         res.jsend.success(model.toJSON())
       })
-      .catch(Player.NoRowsUpdatedError, err => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
+      .catch(Player.NoRowsUpdatedError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
       .catch(err => res.status(500).jsend.error('Database error', 'Database', err))
   })
 })
