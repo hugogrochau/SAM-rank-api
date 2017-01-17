@@ -43,7 +43,7 @@ import { validateIdWithPlatform } from '../lib/util'
 /**
  * @apiDefine DatabaseError
  *
- * @apiError Database There was an error with the application database
+ * @apiError Database Error with the application database
  *
  *  @apiErrorExample Database Error-Response:
  *     HTTP/1.1 500 Internal Server Error
@@ -51,16 +51,14 @@ import { validateIdWithPlatform } from '../lib/util'
  *       "status": "error",
  *       "message": "Database error",
  *       "code": "Database",
- *       "data": {
- *          /* database error data *\/
- *       }
+ *       "data": "DATABASE ERROR DATA"
  *     }
  */
 
 /**
  * @apiDefine ExternalAPIError
  *
- * @apiError ExternalAPI There was an error fetching player data from the external API
+ * @apiError ExternalAPI Error fetching player data from the external API
  *
  * @apiErrorExample ExternalAPI Error-Response:
  *     HTTP/1.1 500 Internal Server Error
@@ -68,9 +66,7 @@ import { validateIdWithPlatform } from '../lib/util'
  *       "status": "error",
  *       "message": "Error fetching player from external API",
  *       "code": "ExternalAPI",
- *       "data": {
- *          /* external API error data *\/
- *       }
+ *       "data": "EXTERNAL API ERROR DATA"
  *     }
  */
 
@@ -171,15 +167,7 @@ api.get('/:platform/:id/', (req, res) => {
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
  * @apiParam {String} id Player's unique id.
  *
- * @apiSuccess {Object} success Success message
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        "success": {
- *          "message": "Player added"
- *        }
- *     }
+ * @apiSuccess {Object} player Player object
  *
  * @apiError DuplicatePlayer Player is already added
  *
@@ -287,7 +275,7 @@ api.get('/:platform/:id/update', (req, res) => {
  *     HTTP/1.1 200 OK
  *     {
  *       "status": "success",
- *       "message": "Player deleted"
+ *       "data": "Player deleted"
  *     }
  *
  *

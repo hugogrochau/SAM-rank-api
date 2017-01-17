@@ -53,10 +53,10 @@ import { validateIdWithPlatform } from '../lib/util'
  *     }
  */
 
- /**
+/**
  * @apiDefine DatabaseError
  *
- * @apiError Database There was an error with the application database
+ * @apiError Database Error with the application database
  *
  *  @apiErrorExample Database Error-Response:
  *     HTTP/1.1 500 Internal Server Error
@@ -64,9 +64,7 @@ import { validateIdWithPlatform } from '../lib/util'
  *       "status": "error",
  *       "message": "Database error",
  *       "code": "Database",
- *       "data": {
- *          /* database error data *\/
- *       }
+ *       "data": "DATABASE ERROR DATA"
  *     }
  */
 
@@ -144,15 +142,7 @@ api.get('/:id', (req, res) => {
  *
  * @apiParam {String} name Team name
  *
- * @apiSuccess {Object} success Success message
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        "success": {
- *          "message": "Team added"
- *        }
- *     }
+ * @apiSuccess {Object} team Team object
  *
  * @apiUse InputError
  *
@@ -175,7 +165,7 @@ api.post('/add', (req, res) => {
 })
 
 /**
- * @api {get} /team/:id/add-player/:player-platform/:player-id Remove Player from Team
+ * @api {get} /team/:id/add-player/:player-platform/:player-id Add Player to Team
  * @apiName AddPlayerToTeam
  * @apiGroup Team
  *
