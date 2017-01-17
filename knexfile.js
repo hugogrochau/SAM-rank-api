@@ -1,8 +1,11 @@
 module.exports = {
 
   test: {
-    client: 'pg',
-    connection: 'postgres://localhost/samranking-test',
+    client: 'sqlite3',
+    connection: {
+      filename: './test.sqlite3'
+    },
+    useNullAsDefault: true,
     migrations: {
       directory: __dirname + '/db/migrations'
     },
