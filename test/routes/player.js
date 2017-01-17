@@ -2,7 +2,7 @@ export default ( {app, chai} ) => {
 
   let testSteamId = '76561198048735069';
 
-  describe('/player/', () => {
+  describe('/player', () => {
 
     it('Should get all players', done => {
       chai.request(app)
@@ -13,7 +13,7 @@ export default ( {app, chai} ) => {
         });
     });
 
-    describe('/player/:platform/:id/add', () => {
+    describe('/:platform/:id/add', () => {
 
       it('Should add a player', done => {
         chai.request(app)
@@ -43,7 +43,7 @@ export default ( {app, chai} ) => {
       });
     });
 
-    describe('/player/:platform/:id/', () => {
+    describe('/:platform/:id', () => {
 
       it('Should get a player', done => {
         chai.request(app)
@@ -65,7 +65,7 @@ export default ( {app, chai} ) => {
       });
     });
 
-    describe('/player/:platform/:id/delete', () => {
+    describe('/:platform/:id/delete', () => {
 
       it('Should delete a player', done => {
         chai.request(app)
@@ -93,8 +93,6 @@ export default ( {app, chai} ) => {
             done();
           });
       });
-
     });
   });
 }
-

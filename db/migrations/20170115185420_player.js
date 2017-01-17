@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
     table.string('id');
     table.integer('platform');
     table.primary(['id', 'platform']);
-    table.string('name').notNullable();
+    table.string('name');
     table.integer('1v1');
     table.integer('1v1_division');
     table.integer('1v1_games_played');

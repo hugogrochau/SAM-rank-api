@@ -1,17 +1,14 @@
 import { Router } from 'express';
 import Player from '../models/player';
-import Mapper from 'jsonapi-mapper'
 import { getPlatformId, getRanksFromStats } from '../lib/util';
 import { getStats } from '../lib/rocket_league_tracker_api'
-import { validateIdWithPlatform, errMsg, okMsg } from '../lib/util';
-
-const mapper = new Mapper.Bookshelf();
-const format = (obj) =>  mapper.map(obj, 'player', {'enableLinks': false});
+import { validateIdWithPlatform } from '../lib/util';
+// TODO update documentation examples
 
 /**
  * @apiDefine PlayerNotFoundError
  *
- * @apiError PlayerNotFound The Player could not be found
+ * @apiError PlayerNotFound Player could not be found
  *
  * @apiErrorExample PlayerNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
@@ -25,7 +22,7 @@ const format = (obj) =>  mapper.map(obj, 'player', {'enableLinks': false});
 /**
  * @apiDefine InputError
  *
- * @apiError Input The input is invalid
+ * @apiError Input Input is invalid
  *
  * @apiErrorExample Input Error-Response:
  *     HTTP/1.1 400 Bad Request
@@ -78,8 +75,8 @@ const api = Router();
 api.get('/', (req, res) => {
   new Player()
     .fetchAll()
-    .then(model => res.status(200).json(format(model)))
-    .catch(err => errMsg(res, 500, 'Database', err));
+    .then(model => res.jsend.success(model.toJSON()))
+    .catch(err => res.status(500).jsend.error('Database error', 'Database', err));
 });
 
 /**
@@ -137,21 +134,20 @@ api.get('/:platform/:id/', (req, res) => {
 
   req.getValidationResult().then( result => {
     if (!result.isEmpty()) {
-      return errMsg(res, 400, 'InputError', result.mapped());
+      return res.status(400).jsend.error('Input error', 'Input', result.mapped());
     }
+
+    let platform = getPlatformId(req.params.platform);
+
+    new Player({
+      'id': req.params.id.toLowerCase(),
+      'platform': platform
+    })
+      .fetch({ require: true })
+      .then(model => res.jsend.success(model.toJSON()))
+      .catch(Player.NotFoundError, err => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
+      .catch(err => res.status(500).jsend.error('Database error', 'Database', err));
   });
-
-  let platform = getPlatformId(req.params.platform);
-
-  new Player({
-    'id': req.params.id.toLowerCase(),
-    'platform': platform
-  })
-    .fetch({ 'require': true })
-    .then(model => res.status(200).json(format(model)))
-    .catch(Player.NotFoundError, err => errMsg(res, 404, 'PlayerNotFound', 'Player not found'))
-    .catch(err => errMsg(res, 500, 'Database', err));
-
 });
 
 /**
@@ -159,15 +155,6 @@ api.get('/:platform/:id/', (req, res) => {
  * @apiName AddPlayer
  * @apiGroup Player
  *
-  req.checkParams('platform', 'Invalid platform').isValidPlatform();
-  validateIdWithPlatform(req, req.params.platform);
-
-  req.getValidationResult().then( result => {
-    if (!result.isEmpty()) {
-      return errMsg(res, 400, 'InputError', result.mapped());
-    }
-  });
-
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
  * @apiParam {String} id Player's unique id.
  *
@@ -181,7 +168,7 @@ api.get('/:platform/:id/', (req, res) => {
  *        }
  *     }
  *
- * @apiError DuplicatePlayer The player is already added
+ * @apiError DuplicatePlayer Player is already added
  *
  * @apiErrorExample DuplicatePlayer Error-Response:
  *     HTTP/1.1 409 Conflict
@@ -197,6 +184,7 @@ api.get('/:platform/:id/', (req, res) => {
  *
  * @apiUse InputError
  */
+// TODO change this to post
 api.get('/:platform/:id/add', (req, res) => {
 
   req.checkParams('platform', 'Invalid platform').isValidPlatform();
@@ -204,34 +192,24 @@ api.get('/:platform/:id/add', (req, res) => {
 
   req.getValidationResult().then( result => {
     if (!result.isEmpty()) {
-      return errMsg(res, 400, 'Input', result.mapped());
+      return res.status(400).jsend.error('Input error', 'Input', result.mapped());
     }
+
+    let attributes = {
+      'id': req.params.id,
+      'platform': req.params.platform
+    };
+
+    new Player()
+      .save(attributes, {method: 'insert'})
+      .then(model => res.jsend.success(model.toJSON()))
+      .catch(err => {
+        if (err.code == '23505' || err.errno == '19') {
+          return res.status(409).jsend.error('Player already added', 'DuplicatePlayer');
+        }
+        return res.status(500).jsend.error('Database error', 'Database', err);
+      })
   });
-
-  let platform = getPlatformId(req.params.platform);
-
-  let rltPlatform = 3 - platform; // rocket league tracker platform conversion
-
-  getStats(rltPlatform, req.params.id, process.env.TRACKER_API_KEY)
-    .then(response => {
-      let ranks = getRanksFromStats(response.stats);
-      let attributes = Object.assign(ranks,
-        {
-          'id': response.platformUserId,
-          'name': response.platformUserHandle,
-          'platform': platform
-        });
-      new Player()
-        .save(attributes, {method: 'insert'})
-        .then(success => okMsg(res, 'Player added'))
-        .catch(err => {
-          if (err.code == '23505' || err.errno == '19') {
-            return errMsg(res, 409, 'DuplicatePlayer', 'Player already added');
-          }
-          return errMsg(res, 500, 'Database', err);
-        });
-    })
-    .catch(err => errMsg(res, 500, 'ExternalAPI', 'Error fetching player from API'));
 });
 
 /**
@@ -267,29 +245,29 @@ api.get('/:platform/:id/update', (req, res) => {
 
   req.getValidationResult().then( result => {
     if (!result.isEmpty()) {
-      return errMsg(res, 400, 'InputError', result.mapped());
+      return res.status(400).jsend.error('Input error', 'Input', result.mapped());
     }
+
+    let platform = getPlatformId(req.params.platform);
+
+    let rltPlatform = 3 - platform; // rocket league tracker platform conversion
+
+    getStats(rltPlatform, req.params.id, process.env.TRACKER_API_KEY)
+      .then(response => {
+        let ranks = getRanksFromStats(response.stats);
+        new Player({'id': response.platformUserId})
+          .set({
+            'name': response.platformUserHandle,
+            'platform': platform
+          })
+          .set(ranks)
+          .save()
+          .then(model => res.jsend.success('Player updated'))
+          .catch(Player.NotFoundError, err => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
+          .catch(err => res.status(500).jsend.error('Database error', 'Database', err));
+      })
+      .catch(err => res.status(500).jsend.error('Error fetching player from API', 'ExternalAPI'));
   });
-
-  let platform = getPlatformId(req.params.platform);
-
-  let rltPlatform = 3 - platform; // rocket league tracker platform conversion
-
-  getStats(rltPlatform, req.params.id, process.env.TRACKER_API_KEY)
-    .then(response => {
-      let ranks = getRanksFromStats(response.stats);
-      new Player({'id': response.platformUserId})
-        .set({
-          'name': response.platformUserHandle,
-          'platform': platform
-        })
-        .set(ranks)
-        .save()
-        .then(success => okMsg(res, 'Player updated'))
-        .catch(Player.NotFoundError, err => errMsg(res, 404, 'PlayerNotFound', 'Player not found'))
-        .catch(err => errMsg(res, 500, 'Database', err));
-    })
-    .catch(err => errMsg(res, 500, 'ExternalAPI', 'Error fetching player from API'));
 });
 
 /**
@@ -314,6 +292,8 @@ api.get('/:platform/:id/update', (req, res) => {
  * @apiUse DatabaseError
  *
  * @apiUse InputError
+ *
+ * @apiUse PlayerNotFoundError
  */
 api.get('/:platform/:id/delete', (req, res) => {
 
@@ -322,20 +302,20 @@ api.get('/:platform/:id/delete', (req, res) => {
 
   req.getValidationResult().then( result => {
     if (!result.isEmpty()) {
-      return errMsg(res, 400, 'InputError', result.mapped());
+      return res.status(400).jsend.error('Input error', 'Input', result.mapped());
     }
+
+    let platform = getPlatformId(req.params.platform);
+
+    new Player({
+      'id': req.params.id,
+      'platform': platform
+    })
+      .destroy({ 'require': true })
+      .then(model => res.jsend.success('Player deleted'))
+      .catch(Player.NoRowsDeletedError, err => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
+      .catch(err => res.status(500).jsend.error('Database error', 'Database', err));
   });
-
-  let platform = getPlatformId(req.params.platform);
-
-  new Player({
-    'id': req.params.id,
-    'platform': platform
-  })
-    .destroy({ 'require': true })
-    .then(success => okMsg(res, 'Player deleted'))
-    .catch(Player.NoRowsDeletedError, err => errMsg(res, 404, 'PlayerNotFound', 'Player not found'))
-    .catch(err => errMsg(res, 500, 'Database', err));
 });
 
 export default api;

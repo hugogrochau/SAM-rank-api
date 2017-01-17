@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv'
 import validators from './lib/validators';
+import jsend from './lib/jsend';
 
 import api from './api';
 
@@ -21,9 +22,15 @@ app.use(bodyParser.json({
 	limit : "100kb"
 }));
 
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
 app.use(expressValidator({
   customValidators: validators
 }));
+
+app.use(jsend.middleware);
 
 // internal middleware
 // app.use(middleware);

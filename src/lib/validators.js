@@ -19,7 +19,6 @@ export default {
   // length [3,16], alphanumeric with [-,_], first char must be alpha
   isValidPSNId: (input) => {
     return validator.isAlpha(input[0]) && input.length >= 3 && input.length <= 16 && validator.isAlphaNumeric(validator.blacklist(input, '_-'));
-  }
+  },
+
 };
-
-

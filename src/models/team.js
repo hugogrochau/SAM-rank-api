@@ -1,10 +1,20 @@
 import bs from '../db.js';
+import Player from './player';
 
-const Team = bs.Model.extend({
+class Team extends bs.Model {
 
-  tableName: 'team',
-  hasTimestamps: ['created_at', 'last_update']
+  get tableName() {
+    return 'team';
+  };
 
-});
+  get hasTimestamps() {
+    return ['created_at', 'last_update'];
+  }
+
+  players() {
+    return this.hasMany(Player)
+  }
+
+}
 
 export default Team;

@@ -9,7 +9,7 @@ chai.use(chaiHttp);
 chai.should();
 
 
-describe('/api/v1/', () => {
+describe('/api/v1', () => {
 
   before( done => {
     bs.knex.migrate.rollback()
@@ -23,7 +23,7 @@ describe('/api/v1/', () => {
 
   it('Should connect', done => {
     chai.request(app)
-      .get('/api/v1/')
+      .get('/api/v1')
       .end((err, res) => {
         res.should.have.status(200);
         done();
@@ -32,5 +32,5 @@ describe('/api/v1/', () => {
 
   playerTest({ app, chai });
 
-  // teamTest({ app, chai })
+  teamTest({ app, chai })
 });

@@ -1,14 +1,4 @@
-
-/**	Creates a callback that proxies node callback style arguments to an Express Response object.
- *	@param {express.Response} res	Express HTTP Response
- *	@param {number} [status=200]	Status code to send on success
- *
- *	@example
- *		list(req, res) {
- *			collection.find({}, toRes(res));
- *		}
- */
-
+import Mapper from 'jsonapi-mapper'
 
 const playlistMap = {
   'Ranked Duel 1v1': '1v1',
@@ -60,17 +50,6 @@ const getRanksFromStats = stats => {
   return ranks;
 };
 
-const toRes = (res, status = 200) => {
-  return (err, thing) => {
-    if (err) return res.status(500).send(err);
-
-    if (thing && typeof thing.toObject==='function') {
-      thing = thing.toObject();
-    }
-    res.status(status).json(thing);
-  };
-};
-
 const getPlatformId = (platformString) => {
   switch (platformString.toLowerCase()) {
     case '0':
@@ -98,23 +77,4 @@ const validateIdWithPlatform = (req, platform, column = 'id') => {
   }
 };
 
-const errMsg = (res, status, code, message) => {
-  let jsonMessage = {
-    'error': {
-      'code': code,
-      'message': message
-    }
-  };
-  return res.status(status).json(jsonMessage);
-};
-
-const okMsg = (res, message) => {
-  let jsonMessage = {
-    'success': {
-      'message': 'Player added'
-    }
-  };
-  return res.status(200).json(jsonMessage);
-};
-
-export { toRes, getRanksFromStats, getPlatformId, validateIdWithPlatform, errMsg, okMsg};
+export { getRanksFromStats, getPlatformId, validateIdWithPlatform };

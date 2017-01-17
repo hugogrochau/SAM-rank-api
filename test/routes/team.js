@@ -4,8 +4,9 @@ export default ( {app, chai} ) => {
     name: "Black Dragons"
   };
   let testSteamId = '76561198048735069';
+  let teamId;
 
-  describe('/team/', () => {
+  describe('/team', () => {
 
     it('Should get all teams', done => {
       chai.request(app)
@@ -16,7 +17,7 @@ export default ( {app, chai} ) => {
         });
     });
 
-    describe('/team/add', () => {
+    describe('/add', () => {
 
       it('Should add a team', done => {
         chai.request(app)
@@ -24,16 +25,17 @@ export default ( {app, chai} ) => {
           .send(testTeam)
           .end( (err, res) => {
             res.should.have.status(200);
+            teamId = res.body.data.id;
             done();
           });
       }).timeout(5000);
     });
 
-    describe('/team/:id/', () => {
+    describe('/:id', () => {
 
       it('Should get a team', done => {
         chai.request(app)
-          .get('/api/v1/team/1')
+          .get(`/api/v1/team/${teamId}`)
           .end( (err, res) => {
             res.should.have.status(200);
             res.body.data.name.should.equal(testTeam.name);
@@ -42,7 +44,7 @@ export default ( {app, chai} ) => {
       });
     });
 
-    describe('/team/:id/add-player/:player-id', () => {
+    describe('/:id/add-player/:playerPlatform/:playerId', () => {
 
       it('Should add a player to a team', done => {
         chai.request(app)
@@ -50,20 +52,20 @@ export default ( {app, chai} ) => {
           .get(`/api/v1/player/0/${testSteamId}/add`)
           .end( (err, res ) => {
             res.should.have.status(200);
-            done();
-          });
 
-        chai.request(app)
-          .get(`/api/v1/team/1/add-player/${testSteamId}`)
-          .end( (err, res) => {
-            res.should.have.status(200);
-            done();
-          })
+            // add it to the team
+            chai.request(app)
+              .get(`/api/v1/team/${teamId}/add-player/0/${testSteamId}`)
+              .end( (err, res) => {
+                res.should.have.status(200);
+                done();
+              })
+          });
       }).timeout(5000);
 
       it('Should have added the player to a team', done => {
         chai.request(app)
-          .get('/api/v1/team/1')
+          .get(`/api/v1/team/${teamId}`)
           .end( (err, res) => {
             res.should.have.status(200);
             res.body.data.players[0].id.should.equal(testSteamId);
@@ -72,11 +74,11 @@ export default ( {app, chai} ) => {
       });
     });
 
-    describe('/team/:id/delete', () => {
+    describe('/:id/delete', () => {
 
       it('Should delete a team', done => {
         chai.request(app)
-          .get('/api/v1/team/1/delete')
+          .get(`/api/v1/team/${teamId}/delete`)
           .end( (err, res) => {
             res.should.have.status(200);
             done();
@@ -85,7 +87,7 @@ export default ( {app, chai} ) => {
 
       it('Should have deleted the team', done => {
         chai.request(app)
-          .get('/api/v1/team/1')
+          .get(`/api/v1/team/${teamId}`)
           .end( (err, res) => {
             res.should.have.status(404);
             done();
@@ -94,7 +96,7 @@ export default ( {app, chai} ) => {
 
       it('Should not delete a team that does not exist', done => {
         chai.request(app)
-          .get('/api/v1/team/1/delete')
+          .get(`/api/v1/team/9999999/delete`)
           .end( (err, res) => {
             res.should.have.status(404);
             done();
@@ -103,4 +105,3 @@ export default ( {app, chai} ) => {
     });
   });
 }
-
