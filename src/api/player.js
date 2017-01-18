@@ -244,11 +244,11 @@ api.get('/:platform/:id/update', (req, res) => {
     let rltPlatform = 3 - platform; // rocket league tracker platform conversion
 
     getStats(rltPlatform, req.params.id, process.env.TRACKER_API_KEY)
-      .then(response => {
-        let ranks = getRanksFromStats(response.stats)
-        new Player({'id': response.platformUserId})
+      .then(apiRes => {
+        let ranks = getRanksFromStats(apiRes.stats)
+        new Player({'id': apiRes.platformUserId})
           .set({
-            'name': response.platformUserHandle,
+            'name': apiRes.platformUserHandle,
             'platform': platform
           })
           .set(ranks)
@@ -257,7 +257,7 @@ api.get('/:platform/:id/update', (req, res) => {
           .catch(Player.NotFoundError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
           .catch(err => res.status(500).jsend.error('Database error', 'Database', err))
       })
-      .catch(() => res.status(500).jsend.error('Error fetching player from API', 'ExternalAPI', res.body.json()))
+      .catch(err => res.status(500).jsend.error('Error fetching player from API', 'ExternalAPI', err))
   })
 })
 
