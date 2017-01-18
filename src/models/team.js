@@ -1,4 +1,4 @@
-import bs from '../db.js'
+import bs from '../db'
 import Player from './player'
 
 class Team extends bs.Model {

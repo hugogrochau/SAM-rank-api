@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import http from 'http'
 import express from 'express'
 import expressValidator from 'express-validator'
@@ -15,19 +16,19 @@ app.server = http.createServer(app)
 
 // 3rd party middleware
 app.use(cors({
-	exposedHeaders: ["Link"]
+  exposedHeaders: ['Link'],
 }))
 
 app.use(bodyParser.json({
-	limit : "100kb"
+  limit: '100kb',
 }))
 
 app.use(bodyParser.urlencoded({
-  extended: true
+  extended: true,
 }))
 
 app.use(expressValidator({
-  customValidators: validators
+  customValidators: validators,
 }))
 
 app.use(jsend.middleware)
