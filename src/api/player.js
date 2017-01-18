@@ -160,7 +160,7 @@ api.get('/:platform/:id/', (req, res) => {
 })
 
 /**
- * @api {get} /player/:platform/:id/add Add Player
+ * @api {post} /player/add Add Player
  * @apiName AddPlayer
  * @apiGroup Player
  *
@@ -183,11 +183,11 @@ api.get('/:platform/:id/', (req, res) => {
  *
  * @apiUse InputError
  */
-// TODO change this to post
-api.get('/:platform/:id/add', (req, res) => {
+api.post('/add', (req, res) => {
 
-  req.checkParams('platform', 'Invalid platform').isValidPlatform()
-  validateIdWithPlatform(req, req.params.platform)
+  req.checkBody('platform', 'Invalid platform').isValidPlatform()
+  validateIdWithPlatform(req, req.body.platform)
+
 
   req.getValidationResult().then( result => {
     if (!result.isEmpty()) {
@@ -195,9 +195,10 @@ api.get('/:platform/:id/add', (req, res) => {
     }
 
     let attributes = {
-      'id': req.params.id,
-      'platform': req.params.platform
+      'id': req.body.id,
+      'platform': req.body.platform
     }
+
 
     new Player()
       .save(attributes, {method: 'insert'})

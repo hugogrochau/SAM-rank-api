@@ -1,10 +1,10 @@
 export default ( {app, chai} ) => {
 
-  let testTeam = {
+  const testTeam = {
     name: "Black Dragons"
   }
-  let testSteamId = '76561198048735069'
-  let testSteamId2 = '76561198336554280'
+  const testSteamId = '76561198048735069'
+  const testSteamId2 = '76561198336554280'
   let teamId
 
   const addTeam = team => {
@@ -13,22 +13,20 @@ export default ( {app, chai} ) => {
       .send(team)
   }
 
-  const addPlayer = id => {
+  const addPlayer = ( id, platform = '0' ) => {
     return chai.request(app)
-      .get(`/api/v1/player/0/${id}/add`)
-      .send()
+      .post('/api/v1/player/add')
+      .send({ id: id, platform: platform })
   }
 
   const addPlayerToTeam = (id, pid) => {
     return chai.request(app)
       .get(`/api/v1/team/${id}/add-player/0/${pid}`)
-      .send()
   }
 
   const removePlayerFromTeam = (id, pid) => {
     return chai.request(app)
       .get(`/api/v1/team/${id}/remove-player/0/${pid}`)
-      .send()
   }
 
   describe('/team', () => {

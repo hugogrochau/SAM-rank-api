@@ -194,13 +194,19 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
       return res.status(400).jsend.error('Input error', 'Input', result.mapped())
     }
 
-    new Player({ id: req.params['playerId'], platform: req.params['playerPlatform'] })
-      .save({ team_id: req.params['id'] })
-      .then(model => {
-        res.jsend.success(model.toJSON())
+    /* check if team exists */
+    new Team({ id: req.params.id })
+      .fetch()
+      .then(() => {
+        new Player({ id: req.params['playerId'], platform: req.params['playerPlatform'] })
+          .save({ team_id: req.params['id'] })
+          .then(model => {
+            res.jsend.success(model.toJSON())
+          })
+          .catch(Player.NoRowsUpdatedError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
+          .catch(err => res.status(500).jsend.error('Database error', 'Database', err))
       })
-      .catch(Player.NoRowsUpdatedError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
-      .catch(err => res.status(500).jsend.error('Database error', 'Database', err))
+      .catch(Team.NotFoundError, err => res.status(404).jsend.error('Team not found', 'TeamNotFound', err))
   })
 })
 
@@ -239,6 +245,8 @@ api.get('/:id/remove-player/:playerPlatform/:playerId', (req, res) => {
       .then(model => {
         res.jsend.success(model.toJSON())
       })
+      .catch(Player.NoRowsUpdatedError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
+      .catch(err => res.status(500).jsend.error('Database error', 'Database', err))
   })
 })
 

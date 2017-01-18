@@ -1,24 +1,22 @@
 export default ( {app, chai} ) => {
 
-  let testSteamId = '76561198336554280'
-  let testSteamName = 'KappaRoss'
+  const testSteamId = '76561198336554280'
+  const testSteamName = 'KappaRoss'
 
-  const addPlayer = ( id, platform=0 ) => {
+  const addPlayer = ( id, platform = '0' ) => {
     return chai.request(app)
-      .get(`/api/v1/player/${platform}/${id}/add`)
-      .send()
+      .post('/api/v1/player/add')
+      .send({ id: id, platform: platform })
   }
 
-  const deletePlayer = ( id, platform=0 ) => {
+  const deletePlayer = ( id, platform = '0' ) => {
     return chai.request(app)
       .get(`/api/v1/player/${platform}/${id}/delete`)
-      .send()
   }
 
-  const getPlayer = ( id, platform=0 ) => {
+  const getPlayer = ( id, platform = '0' ) => {
     return chai.request(app)
       .get(`/api/v1/player/${platform}/${id}`)
-      .send()
   }
 
   describe('/player', () => {
@@ -28,7 +26,7 @@ export default ( {app, chai} ) => {
         .get('/api/v1/player').should.eventually.have.property('status', 200)
     })
 
-    describe('/:platform/:id/add', () => {
+    describe('/add', () => {
 
       it('Should add a player', () => {
         return addPlayer(testSteamId).should.eventually.have.property('status', 200)

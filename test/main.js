@@ -19,6 +19,7 @@ describe('/api/v1', () => {
     })
   })
 
+  //TODO: Make a client for my API
   it('Should connect', () => {
     return chai.request(app)
       .get('/api/v1').should.eventually.have.property('status', 200)

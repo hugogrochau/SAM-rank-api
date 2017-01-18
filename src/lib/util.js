@@ -65,13 +65,13 @@ const validateIdWithPlatform = (req, platform, column = 'id') => {
   switch (platform) {
     //steam
     case 0:
-      return req.checkParams(column, 'Invalid Steam 64 ID').isValidSteamId();
+      return req.assert(column, 'Invalid Steam 64 ID').isValidSteamId();
     //psn
     case 1:
-      return req.checkParams(column, 'Invalid PSN ID').isValidPSNId();
+      return req.assert(column, 'Invalid PSN ID').isValidPSNId();
     //xbox
     case 2:
-      return req.checkParams(column, 'Invalid Xbox gamertag').isValidXboxId();
+      return req.assert(column, 'Invalid Xbox gamertag').isValidXboxId();
   }
 };
 
