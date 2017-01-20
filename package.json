@@ -1,7 +1,7 @@
 {
-  "name": "sam-rank-api",
-  "version": "0.0.1",
-  "description": "API for the South American rocket league ranking",
+  "name": "rocketleaguesam-api",
+  "version": "0.0.2",
+  "description": "Rocket League South America API",
   "main": "dist",
   "scripts": {
     "dev": "nodemon -w src --exec \"babel-node src\"",
@@ -15,16 +15,16 @@
   },
   "apidoc": {
     "name": "sam-rank-api",
-    "version": "0.0.1",
-    "description": "API for the South American rocket league ranking",
+    "version": "0.0.2",
+    "description": "Rocket League South America API",
     "apidoc": {
-      "title": "API for the South American rocket league ranking",
+      "description": "Rocket League South America API",
       "url": "https://127.0.0.1:8080/api/v1/"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hugogrochau/SAM-rank-api.git"
+    "url": "git+https://github.com/hugogrochau/rocketleaguesam-api.git"
   },
   "author": "Hugo Grochau <hugo@grochau.com>",
   "license": "MIT",
