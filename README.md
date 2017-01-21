@@ -1,5 +1,5 @@
-# SAM-rank-api
-Rocket League South American Ranking API
+# rocketleaguesam-api
+Rocket League South America API
 
 ## Libraries
 * Node.js
