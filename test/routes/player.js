@@ -72,11 +72,11 @@ export default ({ app, chai }) => {
           .get(`/api/v1/player/0/${testSteamId}`)
           .should.be.rejectedWith('Not Found')
       )
-    })
 
-    it('Should not delete a player that does not exist', () =>
-      deletePlayer(testSteamId)
-        .should.be.rejectedWith('Not Found')
-    )
+      it('Should not delete a player that does not exist', () =>
+        deletePlayer(testSteamId)
+          .should.be.rejectedWith('Not Found')
+      )
+    })
   })
 }

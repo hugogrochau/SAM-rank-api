@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import Team from '../models/team'
 import Player from '../models/player'
-import { validateIdWithPlatform } from '../lib/util'
 // TODO update documentation examples
 
 /**
@@ -184,7 +183,9 @@ api.post('/add', (req, res) => {
 api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
   req.checkParams('playerPlatform', 'Invalid platform').isValidPlatform()
-  validateIdWithPlatform(req, req.params.playerPlatform, 'playerId')
+  req.checkParams('playerId', 'Invalid id').isValidIdForPlatform(req.params.playerPlatform)
+
+  const platformId = Player.getPlatformIdFromString(req.params.playerPlatform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
@@ -195,7 +196,7 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
     new Team({ id: req.params.id })
       .fetch()
       .then(() => {
-        new Player({ id: req.params.playerId, platform: req.params.playerPlatform })
+        new Player({ id: req.params.playerId, platform: platformId })
           .save({ team_id: req.params.id })
           .then((model) => {
             res.jsend.success(model.toJSON())
@@ -229,14 +230,16 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
 api.get('/:id/remove-player/:playerPlatform/:playerId', (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
   req.checkParams('playerPlatform', 'Invalid platform').isValidPlatform()
-  validateIdWithPlatform(req, req.params.playerPlatform, 'playerId')
+  req.checkParams('playerId', 'Invalid id').isValidIdForPlatform(req.params.playerPlatform)
+
+  const platformId = Player.getPlatformIdFromString(req.params.playerPlatform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
       return res.status(400).jsend.error('Input error', 'Input', result.mapped())
     }
 
-    new Player({ id: req.params.playerId, platform: req.params.playerPlatform })
+    new Player({ id: req.params.playerId, platform: platformId })
       .save({ team_id: null })
       .then((model) => {
         res.jsend.success(model.toJSON())

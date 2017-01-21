@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import Player from '../models/player'
-import { getPlatformId, validateIdWithPlatform } from '../lib/util'
-import { getInformation } from '../lib/rocket_league_tracker_api'
+import rankApi from '../lib/rocket-league-rank-api'
 
 // TODO update documentation examples
 /**
@@ -137,18 +136,18 @@ api.get('/', (req, res) => {
  */
 api.get('/:platform/:id/', (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
-  validateIdWithPlatform(req, req.params.platform)
+  req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
       return res.status(400).jsend.error('Input error', 'Input', result.mapped())
     }
 
-    const platform = getPlatformId(req.params.platform)
+    const platformId = Player.getPlatformIdFromString(req.params.platform)
 
     new Player({
       id: req.params.id.toLowerCase(),
-      platform,
+      platform: platformId,
     })
       .fetch({ require: true })
       .then((model) => res.jsend.success(model.toJSON()))
@@ -183,17 +182,18 @@ api.get('/:platform/:id/', (req, res) => {
  */
 api.post('/add', (req, res) => {
   req.checkBody('platform', 'Invalid platform').isValidPlatform()
-  validateIdWithPlatform(req, req.body.platform)
-
+  req.checkBody('id', 'Invalid id').isValidIdForPlatform(req.body.platform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
       return res.status(400).jsend.error('Input error', 'Input', result.mapped())
     }
 
+    const platformId = Player.getPlatformIdFromString(req.body.platform)
+
     const attributes = {
       id: req.body.id,
-      platform: req.body.platform,
+      platform: platformId,
     }
 
     new Player()
@@ -228,21 +228,21 @@ api.post('/add', (req, res) => {
  */
 api.get('/:platform/:id/update', (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
-  validateIdWithPlatform(req, req.params.platform)
+  req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
       return res.status(400).jsend.error('Input error', 'Input', result.mapped())
     }
 
-    const platform = getPlatformId(req.params.platform)
+    const platformId = Player.getPlatformIdFromString(req.params.platform)
 
-    getInformation(platform, req.params.id, process.env.TRACKER_API_KEY)
+    rankApi.getPlayerInformation(platformId, req.params.id, process.env.TRACKER_API_KEY)
       .then((info) => {
         new Player({ id: info.id })
           .set({
             name: info.name,
-            platform,
+            platformId,
           })
           .set(info)
           .save()
@@ -280,18 +280,18 @@ api.get('/:platform/:id/update', (req, res) => {
  */
 api.get('/:platform/:id/delete', (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
-  validateIdWithPlatform(req, req.params.platform)
+  req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
       return res.status(400).jsend.error('Input error', 'Input', result.mapped())
     }
 
-    const platform = getPlatformId(req.params.platform)
+    const platformId = Player.getPlatformIdFromString(req.params.platform)
 
     new Player({
       id: req.params.id,
-      platform,
+      platformId,
     })
       .destroy({ require: true })
       .then(() => res.jsend.success('Player deleted'))
@@ -301,4 +301,3 @@ api.get('/:platform/:id/delete', (req, res) => {
 })
 
 export default api
-

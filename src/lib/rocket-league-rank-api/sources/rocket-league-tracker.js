@@ -1,4 +1,5 @@
-import request from 'superagent'
+import fetch from 'isomorphic-fetch'
+import querystring from 'querystring'
 
 const API_URL = 'https://20kiyaost7.execute-api.us-west-2.amazonaws.com/prod'
 
@@ -54,16 +55,16 @@ const getRanksFromInformation = (stats) => {
   return ranks
 }
 
-function getInformation(platform, id, apiKey) {
+const getPlayerInformation = (platform, id, apiKey) => {
   const rltPlatform = 3 - platform
+  const query = querystring.stringify({
+    platform: rltPlatform,
+    name: id,
+  })
   return new Promise((resolve, reject) => {
-    request
-      .get(API_URL)
-      .set({ 'X-API-KEY': apiKey })
-      .query({
-        platform: rltPlatform,
-        name: id,
-      })
+    fetch(`${API_URL}?${query}`, {
+      headers: { 'X-API-KEY': apiKey },
+    })
       .then((res) => {
         const info = getRanksFromInformation(res.body.stats)
         info.name = res.body.platformUserHandle
@@ -73,4 +74,4 @@ function getInformation(platform, id, apiKey) {
       .catch((err) => reject(err))
   })
 }
-export { getInformation }
+export default { getPlayerInformation }

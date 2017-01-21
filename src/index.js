@@ -1,11 +1,10 @@
-/* eslint-disable no-console */
 import http from 'http'
 import express from 'express'
 import expressValidator from 'express-validator'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import validators from './lib/validators'
+import validators from './util/validators'
 import jsend from './lib/jsend'
 
 import api from './api'
@@ -42,9 +41,9 @@ app.use('/api/v1', api)
 // no need to start a server when testing
 if (process.env.NODE_ENV !== 'test') {
   app.server.listen(process.env.PORT || 8080)
-
+  /* eslint-disable no-console */
   console.log(`Started on port ${app.server.address().port}`)
+  /* eslint-enable no-console */
 }
-
 
 export default app
