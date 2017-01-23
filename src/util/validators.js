@@ -16,7 +16,7 @@ const isValidSteamId = (input) => validator.isNumeric(input) && input.length ===
 const isValidPSNId = (input) =>
 validator.isAlpha(input[0])
 && input.length >= 3 && input.length <= 16
-&& validator.isAlphaNumeric(validator.blacklist(input, '_-'))
+&& validator.isAlphanumeric(validator.blacklist(input, '_-'))
 
 const isValidXboxId = (input) =>
 validator.isAlphanumeric(input.trim()) && input.length >= 3 && input.length <= 15
