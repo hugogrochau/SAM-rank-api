@@ -11,7 +11,8 @@
     "test": "NODE_ENV=test mocha --compilers js:babel-register --reporter spec",
     "docs": "apidoc -i src/api -o apidoc/",
     "migrate": "knex migrate:latest --env development",
-    "lint": "eslint src test"
+    "lint": "eslint src test",
+    "all": "npm run lint && npm run test"
   },
   "apidoc": {
     "name": "sam-rank-api",
