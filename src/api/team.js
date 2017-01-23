@@ -278,14 +278,16 @@ api.get('/:id/delete', (req, res) => {
       .fetch({ require: true, withRelated: 'players' })
       .then((team) => {
         team
-          .players()
-          .query()
-          .update({ team_id: null })
-          .then(() => {
-            team.destroy({ require: true })
-              .then(() => res.jsend.success('Team deleted'))
-              .catch(Team.NoRowsDeletedError, (err) => res.status(500).jsend.error('Database error', 'Database', err))
-          })
+        .players()
+        .query()
+        .where('team_id', team.get('id'))
+        .update({ team_id: null })
+        .then(() => {
+          team.destroy({ require: true })
+            .then(() => res.jsend.success('Team deleted'))
+            .catch(Team.NoRowsDeletedError, (err) => res.status(500).jsend.error('Database error', 'Database', err))
+        })
+        .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
       })
       .catch(Team.NotFoundError, (err) => res.status(404).jsend.error('Team not found', 'TeamNotFound', err))
       .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
