@@ -1,3 +1,0 @@
-[submodule "src/lib/jsend"]
-	path = src/lib/jsend
-	url = git@github.com:hugogrochau/jsend.git
