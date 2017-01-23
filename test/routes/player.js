@@ -1,6 +1,5 @@
 export default ({ app, chai }) => {
   const testSteamId = '76561198336554280'
-  const testSteamName = 'KappaRoss'
 
   const addPlayer = (id, platform = '0') =>
     chai.request(app)
@@ -34,17 +33,6 @@ export default ({ app, chai }) => {
         addPlayer(testSteamId, 'nintendo-wii').should.be.rejectedWith('Bad Request')
       )
     })
-
-    describe('/:platform/:id/update', () =>
-      it('Should update a player', () =>
-        chai.request(app)
-          .get(`/api/v1/player/0/${testSteamId}/update`)
-          .then((res) => {
-            res.should.have.status(200)
-            res.body.data.name.should.equal(testSteamName)
-          })
-      ).timeout(5000) /* laggy api */
-    )
 
     describe('/:platform/:id', () => {
       it('Should get a player', () =>
