@@ -26,6 +26,14 @@ class Player extends bs.Model {
       default: return -1
     }
   }
+
+  get virtuals() {
+    return {
+      sum: {
+        get: () => this.get('1v1') + this.get('2v2') + this.get('3v3') + this.get('3v3s'),
+      },
+    }
+  }
 }
 
 export default Player

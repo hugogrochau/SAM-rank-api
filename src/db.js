@@ -4,5 +4,6 @@ import knexConfig from '../knexfile'
 
 const environment = process.env.NODE_ENV || 'development'
 const bs = bookshelf(knex(knexConfig[environment]))
+bs.plugin('virtuals')
 
 export default bs
