@@ -5,7 +5,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import validators from './util/validators'
-import jsend from './lib/jsend'
+import jsend from '../lib/jsend'
 
 import api from './api'
 

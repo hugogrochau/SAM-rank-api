@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import Player from '../models/player'
-import rankApi from '../lib/rocket-league-rank-api'
+import pick from 'lodash/pick'
 
 // TODO update documentation examples
 /**
@@ -65,6 +65,20 @@ import rankApi from '../lib/rocket-league-rank-api'
  *       "message": "Error fetching player from external API",
  *       "code": "ExternalAPI",
  *       "data": "EXTERNAL API ERROR DATA"
+ *     }
+ */
+
+/**
+ * @apiDefine UnauthorizedError
+ *
+ * @apiError Unauthorized Not authorized to use resource
+ *
+ * @apiErrorExample ExternalAPI Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "status": "error",
+ *       "message": "Not authorized to use resource",
+ *       "code": "Unauthorized"
  *     }
  */
 
@@ -207,18 +221,37 @@ api.post('/add', (req, res) => {
       })
   })
 })
-
+// table.string('name');
+// table.integer('1v1');
+// table.integer('1v1_division');
+// table.integer('1v1_games_played');
+// table.integer('1v1_tier');
+// table.integer('2v2');
+// table.integer('2v2_division');
+// table.integer('2v2_games_played');
+// table.integer('2v2_tier');
+// table.integer('3v3');
+// table.integer('3v3_division');
+// table.integer('3v3_games_played');
+// table.integer('3v3_tier');
+// table.integer('3v3s');
+// table.integer('3v3s_division');
+// table.integer('3v3s_games_played');
+// table.integer('3v3s_tier');
 /**
- * @api {get} /player/:platform/:id/update Update Player information
+ * @api {post} /player/:platform/:id/update Update Player information
  * @apiName UpdatePlayer
  * @apiGroup Player
  *
- * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
- * @apiParam {String} id Player's unique id.
+ * @apiParam {String="name"} platform Player's platform
+ * @apiParam {Number} 1v1 Player's 1v1 rank.
+ * @apiParam {Number} 2v2 Player's 2v2 rank.
+ * @apiParam {Number} 3v3 Player's 3v3 rank.
+ * @apiParam {Number} 3v3s Player's 3v3s rank.
  *
  * @apiSuccess {Object} player Player object
  *
- * @apiUse ExternalAPIError
+ * @apiUse UnauthorizedError
  *
  * @apiUse PlayerNotFoundError
  *
@@ -226,9 +259,24 @@ api.post('/add', (req, res) => {
  *
  * @apiUse DatabaseError
  */
-api.get('/:platform/:id/update', (req, res) => {
+api.post('/:platform/:id/update', (req, res) => {
+  const columns = ['name', '1v1', '2v2', '3v3', '3v3s']
+
+  if (req.ip.slice(-9) !== '127.0.0.1') {
+    return res.status(403).jsend.error('Not authorized to use resource', 'Unauthorized')
+  }
+
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
+
+  req.checkBody('name').optional().isLength({ min: 3, max: 30 })
+
+  columns.slice(1).forEach((column) => {
+    req.checkBody(column).optional().isInt()
+    req.checkBody(column).optional().isInt()
+    req.checkBody(column).optional().isInt()
+    req.checkBody(column).optional().isInt()
+  })
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
@@ -236,21 +284,14 @@ api.get('/:platform/:id/update', (req, res) => {
     }
 
     const platformId = Player.getPlatformIdFromString(req.params.platform)
+    const updates = pick(req.body, columns)
 
-    rankApi.getPlayerInformation(platformId, req.params.id, process.env.TRACKER_API_KEY)
-      .then((info) => {
-        new Player({ id: info.id })
-          .set({
-            name: info.name,
-            platformId,
-          })
-          .set(info)
-          .save()
-          .then((model) => res.jsend.success(model.toJSON()))
-          .catch(Player.NotFoundError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
-          .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
-      })
-      .catch((err) => res.status(500).jsend.error('Error fetching player from API', 'ExternalAPI', err))
+    new Player({ id: req.params.id, platform: platformId })
+      .set(updates)
+      .save()
+      .then(() => res.jsend.success(req.body))
+      .catch(Player.NotFoundError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
+      .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
   })
 })
 

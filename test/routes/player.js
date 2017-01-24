@@ -1,10 +1,17 @@
 export default ({ app, chai }) => {
   const testSteamId = '76561198336554280'
+  const testSteamName = 'KappaPride'
 
   const addPlayer = (id, platform = '0') =>
     chai.request(app)
       .post('/api/v1/player/add')
       .send({ id, platform })
+
+  const updatePlayer = (id, platform = '0', data) =>
+    chai.request(app)
+      .post(`/api/v1/player/${platform}/${id}/update`)
+      .send(data)
+
 
   const deletePlayer = (id, platform = '0') =>
     chai.request(app)
@@ -48,6 +55,16 @@ export default ({ app, chai }) => {
           .should.be.rejectedWith('Bad Request')
       )
     })
+
+    describe('/:platform/:id/update', () =>
+      it('Should update a player', () =>
+        updatePlayer(testSteamId, 0, { name: 'KappaPride' })
+          .then((res) => {
+            res.should.have.status(200)
+            res.body.data.name.should.equal(testSteamName)
+          })
+      )
+    )
 
     describe('/:platform/:id/delete', () => {
       it('Should delete a player', () =>
