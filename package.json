@@ -13,7 +13,7 @@
     "migrate": "knex migrate:latest --env development",
     "lint": "eslint src test",
     "all": "npm run lint && npm run test",
-    "updater": "npm run -s build && node dist/scripts/update.js"
+    "updater": "npm run -s build && node -r dotenv/config dist/scripts/update.js"
   },
   "apidoc": {
     "name": "sam-rank-api",

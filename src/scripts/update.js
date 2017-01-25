@@ -1,12 +1,10 @@
 import fetch from 'isomorphic-fetch'
 import queue from 'async/queue'
-import dotenv from 'dotenv'
+import values from 'lodash/values'
 
 import rlrankapi, { TRACKER } from '../lib/rocket-league-rank-api'
 
 /* eslint-disable no-console */
-
-dotenv.config()
 
 if (!process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_KEY || !process.env.RLTRACKER_PRO_API_KEY) {
   console.log('Please set the ROCKETLEAGUE_TRACKER_NETWORK_API_KEY and RLTRACKER_PRO_API_KEY env')
@@ -112,7 +110,7 @@ const updatePlayer = (player, tracker) => new Promise((resolve, reject) => {
 })
 
 let q = queue((player, callback) => {
-  const timesToWait = Object.values(TRACKER).map((trackerId) => ({
+  const timesToWait = values(TRACKER).map((trackerId) => ({
     trackerId,
     timeToWait: timeToWaitBeforeNextRequest(RATE[trackerId], lastRequest[trackerId]),
   }))
