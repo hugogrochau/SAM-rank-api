@@ -246,7 +246,7 @@ api.post('/add', (req, res) => {
  * @apiUse DatabaseError
  */
 api.post('/:platform/:id/update', (req, res) => {
-  const columns = ['name', '1v1', '2v2', '3v3', '3v3s']
+  const columns = Player.updatableColumns
 
   if (req.ip.slice(-9) !== '127.0.0.1') {
     return res.status(403).jsend.error('Not authorized to use resource', 'Unauthorized')
@@ -258,9 +258,6 @@ api.post('/:platform/:id/update', (req, res) => {
   req.checkBody('name').optional().isValidName()
 
   columns.slice(1).forEach((column) => {
-    req.checkBody(column).optional().isInt()
-    req.checkBody(column).optional().isInt()
-    req.checkBody(column).optional().isInt()
     req.checkBody(column).optional().isInt()
   })
 
@@ -276,13 +273,17 @@ api.post('/:platform/:id/update', (req, res) => {
     new Player({ id: req.params.id, platform: platformId })
       .set(updates)
       .save()
-      .then(() =>
-        new PlayerUpdate({ player_id: req.params.id, player_platform: platformId })
-          .set(updates)
-          .save()
-          .then(() => res.jsend.success(req.body))
-          .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
-      )
+      .then(() => {
+        if (Object.keys(updates).length > 0) {
+          new PlayerUpdate({ player_id: req.params.id, player_platform: platformId })
+              .set(updates)
+              .save()
+              .then(() => res.jsend.success(req.body))
+              .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+        } else {
+          return res.jsend.success('Nothing to update')
+        }
+      })
       .catch(Player.NotFoundError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
       .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
   })

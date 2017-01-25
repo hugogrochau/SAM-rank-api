@@ -32,6 +32,17 @@ class Player extends bs.Model {
     }
   }
 
+  static get updatableColumns() {
+    return [
+      'name',
+      '1v1', '1v1_division', '1v1_games_played', '1v1_tier',
+      '2v2', '2v2_division', '2v2_games_played', '2v2_tier',
+      '3v3s', '3v3s_division', '3v3s_games_played', '3v3s_tier',
+      '3v3', '3v3_division', '3v3_games_played', '3v3_tier',
+    ]
+  }
+
+
   get virtuals() {
     return {
       sum: {
