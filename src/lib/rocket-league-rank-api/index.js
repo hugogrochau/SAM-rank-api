@@ -1,7 +1,9 @@
-import rlt from './sources/rocket-league-tracker'
+import rltn from './sources/rocket-league-tracker-network'
+import rltrackerPro from './sources/rltracker-pro'
 
 export const TRACKER = {
-  ROCKET_LEAGUE_TRACKER: 1,
+  ROCKETLEAGUE_TRACKER_NETWORK: 1,
+  RLTRACKER_PRO: 2,
 }
 
 const getPlayerInformation = (platform, id, apiKey, tracker) => {
@@ -10,8 +12,10 @@ const getPlayerInformation = (platform, id, apiKey, tracker) => {
   }
   switch (tracker) {
     default:
-    case TRACKER.ROCKET_LEAGUE_TRACKER:
-      return rlt.getPlayerInformation(platform, id, apiKey)
+    case TRACKER.ROCKETLEAGUE_TRACKER_NETWORK:
+      return rltn.getPlayerInformation(platform, id, apiKey)
+    case TRACKER.RLTRACKER_PRO:
+      return rltrackerPro.getPlayerInformation(platform, id, apiKey)
   }
 }
 
