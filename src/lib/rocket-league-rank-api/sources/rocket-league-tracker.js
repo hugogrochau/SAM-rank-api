@@ -66,13 +66,18 @@ const getPlayerInformation = (platform, id, apiKey) => {
       headers: { 'X-API-KEY': apiKey },
     })
       .then((res) => {
-        res.json()
+          res.json()
           .then((jsonData) => {
-            const info = getRanksFromInformation(jsonData.stats)
-            info.name = jsonData.platformUserHandle
-            info.id = jsonData.platformUserId
-            resolve(info)
-          })
+            if (res.status === 200) {
+              const info = getRanksFromInformation(jsonData.stats)
+              info.name = jsonData.platformUserHandle
+              info.id = jsonData.platformUserId
+              resolve(info)
+            } else {
+              reject(`API ERROR: ${JSON.stringify(jsonData)}\n`)
+            }
+          }).catch((err) => reject(err))
+
       })
       .catch((err) => reject(err))
   })
