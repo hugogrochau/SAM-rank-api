@@ -13,7 +13,7 @@ if (!process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_KEY || !process.env.RLTRACKER_
 
 const PRIORITY_UNIT = 15 // minutes difference between priorities
 
-const LOCAL_API = 'http://192.241.250.100:8080/api/v1'
+const LOCAL_API = 'http://127.0.0.1:8080/api/v1'
 
 const TRACKER_NAME = []
 TRACKER_NAME[TRACKER.RLTRACKER_PRO] = 'rltracker.pro'
