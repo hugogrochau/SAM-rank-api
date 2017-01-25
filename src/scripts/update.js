@@ -13,7 +13,7 @@ if (!process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_KEY || !process.env.RLTRACKER_
 
 const PRIORITY_UNIT = 15 // minutes difference between priorities
 
-const LOCAL_API = 'http://127.0.0.1:8080/api/v1'
+const LOCAL_API = 'http://192.241.250.100:8080/api/v1'
 
 const TRACKER_NAME = []
 TRACKER_NAME[TRACKER.RLTRACKER_PRO] = 'rltracker.pro'
@@ -110,10 +110,15 @@ const updatePlayer = (player, tracker) => new Promise((resolve, reject) => {
 })
 
 let q = queue((player, callback) => {
-  const timesToWait = values(TRACKER).map((trackerId) => ({
+  let timesToWait = values(TRACKER).map((trackerId) => ({
     trackerId,
     timeToWait: timeToWaitBeforeNextRequest(RATE[trackerId], lastRequest[trackerId]),
   }))
+
+  // rltracker doesn't support xbox
+  if (player.platform === 2) {
+    timesToWait = timesToWait.filter((t) => t.trackerId !== TRACKER.RLTRACKER_PRO)
+  }
 
   // sort by timeToWaitBeforeNextRequest
   timesToWait.sort((a, b) => a.timeToWait - b.timeToWait)
@@ -137,7 +142,7 @@ let q = queue((player, callback) => {
         callback(err)
       })
   }, trackerTimeToWait)
-}, 1)
+}, 2)
 
 q.drain = () => setTimeout(update, 60 * 1000)
 
