@@ -255,7 +255,7 @@ api.post('/:platform/:id/update', (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
-  req.checkBody('name').optional().isLength({ min: 3, max: 30 })
+  req.checkBody('name').optional().isValidName()
 
   columns.slice(1).forEach((column) => {
     req.checkBody(column).optional().isInt()
