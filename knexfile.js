@@ -1,11 +1,8 @@
 module.exports = {
 
   test: {
-    client: 'sqlite3',
-    connection: {
-      filename: './test.sqlite3'
-    },
-    useNullAsDefault: true,
+    client: 'pg',
+    connection: 'postgres://localhost/rocketleaguesam-test',
     migrations: {
       directory: __dirname + '/db/migrations'
     },
@@ -15,7 +12,7 @@ module.exports = {
   },
   development: {
     client: 'pg',
-    connection: 'postgres://localhost/samranking-dev',
+    connection: 'postgres://localhost/rocketleaguesam-dev',
     // debug: true,
     migrations: {
       directory: __dirname + '/db/migrations'
