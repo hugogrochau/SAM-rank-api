@@ -1,10 +1,7 @@
 
 exports.up = function(knex, Promise) {
-  return knex.schema.createTable('player', function(table) {
-    table.string('id');
-    table.integer('platform');
-    table.primary(['id', 'platform']);
-    table.unique(['id', 'platform'])
+  return knex.schema.createTable('player_update', function(table) {
+    table.increments('id').primary();
     table.string('name');
     table.integer('1v1');
     table.integer('1v1_division');
@@ -22,14 +19,14 @@ exports.up = function(knex, Promise) {
     table.integer('3v3s_division');
     table.integer('3v3s_games_played');
     table.integer('3v3s_tier');
-    table.integer('priority').defaultTo(5);
     table.timestamp('created_at');
-    table.timestamp('last_update');
-    table.integer('team_id').unsigned();
-    table.foreign('team_id').references('team.id');
+    table.string('player_id').unsigned();
+    table.integer('player_platform').unsigned();
+
+    table.foreign(['player_id', 'player_platform']).references(['player.id', 'player.platform']);
   })
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('player');
+  return knex.schema.dropTable('player_update');
 };

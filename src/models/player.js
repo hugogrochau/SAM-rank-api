@@ -1,5 +1,6 @@
 import bs from '../db'
 import Team from './team'
+import PlayerUpdate from './player-update'
 
 class Player extends bs.Model {
 
@@ -13,6 +14,10 @@ class Player extends bs.Model {
 
   team() {
     return this.belongsTo(Team)
+  }
+
+  playerUpdates() {
+    return this.hasMany(PlayerUpdate)
   }
 
   static getPlatformIdFromString(platformString) {
