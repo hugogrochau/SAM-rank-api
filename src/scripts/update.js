@@ -79,9 +79,14 @@ const updatePlayer = (player, callback) => {
           },
           body: JSON.stringify(stats),
         })
-          .then(() => {
-            console.log(`Updated player: ${player.name}`)
-            callback()
+          .then((res) => {
+            if (res.status === 200) {
+              console.log(`Updated player: ${player.name}`)
+              callback()
+            } else {
+              callback(`Error: ${res.status}`)
+            }
+
           })
           .catch((err) => {
             callback(`Error updating player ${player.name}\n${err}`)
