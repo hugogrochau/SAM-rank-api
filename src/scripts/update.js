@@ -13,6 +13,8 @@ if (!process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_KEY || !process.env.RLTRACKER_
 
 const PRIORITY_UNIT = 15 // minutes difference between priorities
 
+const PULL_DELAY = 60 // seconds to wait before pulling players after a full update is done
+
 const LOCAL_API = 'http://127.0.0.1:8080/api/v1'
 
 const TRACKER_NAME = []
@@ -27,7 +29,7 @@ const lastRequest = []
 lastRequest[TRACKER.RLTRACKER_PRO] = 0
 lastRequest[TRACKER.ROCKETLEAGUE_TRACKER_NETWORK] = 0
 
-const isUp = []
+let isUp = []
 isUp[TRACKER.RLTRACKER_PRO] = true
 isUp[TRACKER.ROCKETLEAGUE_TRACKER_NETWORK] = true
 
@@ -52,13 +54,13 @@ const timeToWaitBeforeNextRequest = (rate, lastRequestTime) => {
   return time < 0 ? 0 : time
 }
 
-const update = () => {
+const pullPlayers = () => {
   console.log(`Starting full update at ${new Date().toISOString()}...`)
 
   console.log('Pulling players...')
 
   // set trackers as up
-  isUp.map(() => true)
+  isUp = isUp.map(() => true)
 
   fetch(`${LOCAL_API}/player`)
     .then((response) => {
@@ -85,8 +87,6 @@ const update = () => {
 const updatePlayer = (player, tracker) => new Promise((resolve, reject) => {
   rlrankapi.getPlayerInformation(player.platform, player.id, API_KEY[tracker], tracker)
       .then((stats) => {
-        console.log(`${LOCAL_API}/player/${player.platform}/${player.id}/update`)
-
         fetch(`${LOCAL_API}/player/${player.platform}/${player.id}/update`, {
           method: 'POST',
           headers: {
@@ -110,15 +110,20 @@ const updatePlayer = (player, tracker) => new Promise((resolve, reject) => {
 })
 
 let q = queue((player, callback) => {
-  let timesToWait = values(TRACKER).map((trackerId) => ({
+  const filteredTrackers = values(TRACKER).filter((t) =>
+    isUp[t] && API_KEY[t] && // remove if tracker is marked as down or if we don't have the key
+    (player.platform !== 2 || (player.platform === 2 && t !== TRACKER.RLTRACKER_PRO)) // RL Tracker can't handle xbox
+  )
+
+  if (filteredTrackers.length === 0) {
+    callback(`No trackers to use for updating ${player.name}`)
+    return
+  }
+
+  const timesToWait = filteredTrackers.map((trackerId) => ({
     trackerId,
     timeToWait: timeToWaitBeforeNextRequest(RATE[trackerId], lastRequest[trackerId]),
   }))
-
-  // rltracker doesn't support xbox
-  if (player.platform === 2) {
-    timesToWait = timesToWait.filter((t) => t.trackerId !== TRACKER.RLTRACKER_PRO)
-  }
 
   // sort by timeToWaitBeforeNextRequest
   timesToWait.sort((a, b) => a.timeToWait - b.timeToWait)
@@ -137,13 +142,16 @@ let q = queue((player, callback) => {
         callback()
       })
       .catch((err) => {
+        console.log(`Marking ${trackerName} as down`)
         isUp[trackerId] = false
-        console.log(err)
         callback(err)
       })
   }, trackerTimeToWait)
-}, 2)
+}, 1)
 
-q.drain = () => setTimeout(update, 60 * 1000)
+q.drain = () => {
+  console.log(`Finished full update. Pulling players again in ${PULL_DELAY} seconds`)
+  setTimeout(pullPlayers, PULL_DELAY * 1000)
+}
 
-update()
+pullPlayers()
