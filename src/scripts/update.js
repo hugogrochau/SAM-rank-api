@@ -17,7 +17,7 @@ const TRACKER_API_KEY = process.env.TRACKER_API_KEY
 
 const API = 'http://127.0.0.1:8080/api/v1'
 
-const RATE = 9 // requests per minute
+const RATE = 1.8 // requests per minute
 
 let lastRequest = 0
 
