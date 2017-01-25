@@ -4,7 +4,7 @@ node_js:
 - 7
 
 before_script:
-- psql -c 'create database rocketleaguesam-test;' -U postgres
+- psql -c 'create database "rocketleaguesam-test";' -U postgres
 
 script:
 - npm run all
