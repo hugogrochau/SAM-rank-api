@@ -22,6 +22,6 @@ const isValidXboxId = (input) =>
 validator.isAlphanumeric(input.trim()) && input.length >= 3 && input.length <= 15
 
 const isValidName = (input) =>
-validator.isLength(input, { min: 1, max: 30 })
+validator.isLength(input, { min: 2, max: 32 })
 
 export default { isValidIdForPlatform, isValidPlatform, isValidSteamId, isValidXboxId, isValidPSNId, isValidName }
