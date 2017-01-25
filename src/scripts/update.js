@@ -25,9 +25,12 @@ const getAdjustedTime = (time, priority) =>
   time + (priority * 60 * 60 * 1000)
 
 // should update every PRIORITY * 60 min
-const shouldUpdate = (player) =>
-  (Date.now() - (new Date(player.last_update)).getTime()) > getAdjustedTime(0, player.priority) &&
-  player.priority > 0
+const shouldUpdate = (player) => {
+  const timeDelta = Date.now() - (new Date(player.last_update)).getTime()
+  const minTimeToUpdate = getAdjustedTime(0, player.priority)
+  const justCreated = player.last_update === player.created_at
+  return (timeDelta > minTimeToUpdate && player.priority > 0) || justCreated
+}
 
 const update = () => {
   console.log(`Starting full update at ${new Date().toISOString()}...`)
@@ -43,7 +46,8 @@ const update = () => {
           const playersToUpdate = jsonData.data.filter((p) => shouldUpdate(p))
 
           playersToUpdate.sort((a, b) =>
-            getAdjustedTime(a.last_update, a.priority) - getAdjustedTime(b.last_update, b.priority))
+            getAdjustedTime((new Date(a.last_update).getTime()), a.priority) -
+            getAdjustedTime((new Date(b.last_update)).getTime(), b.priority))
 
           console.log('Players to update:')
           console.log(playersToUpdate.map((p) => p.name))
