@@ -3,13 +3,11 @@ import express from 'express'
 import expressValidator from 'express-validator'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import dotenv from 'dotenv'
 import validators from './util/validators'
 import jsend from './lib/jsend'
 
 import api from './api'
 
-dotenv.config()
 const app = express()
 app.server = http.createServer(app)
 

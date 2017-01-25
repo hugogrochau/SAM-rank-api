@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon -w src --exec \"babel-node src\"",
     "build": "babel src -s -D -d dist --ignore node_modules",
-    "start": "node dist",
+    "start": "node -r dotenv/config dist",
     "prestart": "npm run -s build",
     "test": "NODE_ENV=test mocha --compilers js:babel-register --reporter spec",
     "docs": "apidoc -i src/api -o apidoc/",
