@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 
 import rlrankapi from '../lib/rocket-league-rank-api'
 
+/* eslint-disable no-console */
+
 dotenv.config()
 
 if (!process.env.TRACKER_API_KEY) {
@@ -12,8 +14,6 @@ if (!process.env.TRACKER_API_KEY) {
 }
 
 const TRACKER_API_KEY = process.env.TRACKER_API_KEY
-
-/* eslint-disable no-console */
 
 const API = 'http://127.0.0.1:8080/api/v1'
 
@@ -86,7 +86,6 @@ const updatePlayer = (player, callback) => {
             } else {
               callback(`Error: ${res.status}`)
             }
-
           })
           .catch((err) => {
             callback(`Error updating player ${player.name}\n${err}`)
