@@ -92,7 +92,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": 2017-01-15T19:59:29.858Z,\n      \"priority\": 2,\n      \"team_id\": null\n    }\n  }\n}",
           "type": "json"
         }
       ]
@@ -249,7 +249,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": 2017-01-15T19:59:29.858Z,\n      \"priority\": 2,\n      \"team_id\": null\n    }\n  }\n}",
           "type": "json"
         }
       ]
@@ -406,7 +406,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": 2017-01-15T19:59:29.858Z,\n      \"priority\": 2,\n      \"team_id\": null\n    }\n  }\n}",
           "type": "json"
         }
       ]
@@ -923,7 +923,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": 2017-01-15T19:59:29.858Z,\n      \"priority\": 2,\n      \"team_id\": null\n    }\n  }\n}",
           "type": "json"
         }
       ]

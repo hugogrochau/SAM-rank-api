@@ -94,7 +94,9 @@ import PlayerUpdate from '../models/player-update'
  *           "3v3_division": 1,
  *           "3v3s_division": 3,
  *           "name": "bd | Freedom",
- *           "created_at": null
+ *           "created_at": 2017-01-15T19:59:29.858Z,
+ *           "priority": 2,
+ *           "team_id": null
  *         }
  *       }
  *     }
