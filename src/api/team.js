@@ -1,47 +1,43 @@
 import { Router } from 'express'
 import Team from '../models/team'
 import Player from '../models/player'
-// TODO update documentation examples
 
 /**
- * @apiDefine PlayerNotFoundError
+ * @apiDefine PlayerNotFound
  *
- * @apiError PlayerNotFound Player could not be found
+ * @apiError PlayerNotFound Player does not exist
  *
  * @apiErrorExample PlayerNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
  *     {
  *       "status": "error",
- *       "message": "Player not found",
- *       "code": "PlayerNotFound"
+ *       "message": "PlayerNotFound",
  *     }
  */
 
 /**
- * @apiDefine TeamNotFoundError
+ * @apiDefine TeamNotFound
  *
- * @apiError TeamNotFound Team could not be found
+ * @apiError TeamNotFound Team doesn't exist
  *
  * @apiErrorExample TeamNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
  *     {
  *       "status": "error",
- *       "message": "Team not found",
- *       "code": "TeamNotFound"
+ *       "message": "TeamNotFound",
  *     }
  */
 
 /**
  * @apiDefine InputError
  *
- * @apiError Input Input is invalid
+ * @apiError InputError Input is invalid
  *
- * @apiErrorExample Input Error-Response:
+ * @apiErrorExample InputError Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "status": "error",
- *       "message": "Input error",
- *       "code": "Input",
+ *       "message": "InputError",
  *       "data": {
  *         "playerId": {
  *           "param": "playerId",
@@ -55,15 +51,72 @@ import Player from '../models/player'
 /**
  * @apiDefine DatabaseError
  *
- * @apiError Database Error with the application database
+ * @apiError DatabaseError Error with the application database
  *
- *  @apiErrorExample Database Error-Response:
+ *  @apiErrorExample DatabaseError Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
  *       "status": "error",
  *       "message": "Database error",
  *       "code": "Database",
  *       "data": "DATABASE ERROR DATA"
+ *     }
+ */
+
+/**
+ * @apiDefine TeamSuccess
+ *
+ * @apiSuccess {Object} team Team data
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "data": {
+ *         "team": {
+ *            id: 1,
+ *            name: 'Black Dragons',
+ *            image_url: null,
+ *            created_at: '2017-01-23T01:50:12.887Z',
+ *            last_update: '2017-01-23T01:50:12.887Z',
+ *            players: [],
+ *         }
+ *       }
+ *     }
+ */
+
+/**
+ * @apiDefine PlayerSuccess
+ *
+ * @apiSuccess {Object} player Player data
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "data": {
+ *         "player": {
+ *           "id": "76561198013819031",
+ *           "platform": 0,
+ *           "1v1": 1373,
+ *           "1v1_games_played": 180,
+ *           "2v2": 1409,
+ *           "2v2_games_played": 564,
+ *           "3v3": 1150,
+ *           "3v3_games_played": 520,
+ *           "3v3s": 1110,
+ *           "3v3s_games_played": 67,
+ *           "last_update": "2017-01-15T19:59:29.858Z",
+ *           "1v1_tier": 15,
+ *           "2v2_tier": 15,
+ *           "3v3_tier": 15,
+ *           "3v3s_tier": 15,
+ *           "1v1_division": 1,
+ *           "2v2_division": 1,
+ *           "3v3_division": 1,
+ *           "3v3s_division": 3,
+ *           "name": "bd | Freedom",
+ *           "created_at": null
+ *         }
+ *       }
  *     }
  */
 
@@ -74,15 +127,15 @@ const api = Router()
  * @apiName GetTeams
  * @apiGroup Team
  *
- * @apiSuccess {Object[]} data List of Teams
+ * @apiSuccess {Object[]} teams List of Teams
  *
  * @apiUse DatabaseError
  */
 api.get('/', (req, res) => {
   new Team()
     .fetchAll({ withRelated: 'players' })
-    .then((model) => res.jsend.success(model.toJSON()))
-    .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+    .then((model) => res.jsend.success({ teams: model.toJSON() }))
+    .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
 })
 
 /**
@@ -92,26 +145,11 @@ api.get('/', (req, res) => {
  *
  * @apiParam {Number} id Team's unique id.
  *
- * @apiSuccess {Object} data Team data
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "data": {
- *         "id": "1",
- *         "attributes": {
- *           "name": "Black Dragons",
- *           "image_url": "http://d31qciy1ywu4xk.cloudfront.net/bd-logo-white-bg.png",
- *           "created_at": "2017-01-15T19:59:29.858Z",
- *           "last_update": "2017-01-15T19:59:29.858Z",
- *           "players": []
- *         }
- *       }
- *     }
+ * @apiUse TeamSuccess
  *
  * @apiUse InputError
  *
- * @apiUse TeamNotFoundError
+ * @apiUse TeamNotFound
  *
  * @apiUse DatabaseError
  */
@@ -120,16 +158,16 @@ api.get('/:id', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     new Team({
       id: req.params.id,
     })
       .fetch({ require: true, withRelated: 'players' })
-      .then((model) => res.jsend.success(model.toJSON()))
+      .then((model) => res.jsend.success({ team: model.toJSON() }))
       .catch(Team.NotFoundError, () => res.status(404).jsend.error('Team not found', 'TeamNotFound'))
-      .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
   })
 })
 
@@ -140,7 +178,7 @@ api.get('/:id', (req, res) => {
  *
  * @apiParam {String} name Team name
  *
- * @apiSuccess {Object} team Team object
+ * @apiUse TeamSuccess
  *
  * @apiUse InputError
  *
@@ -151,13 +189,13 @@ api.post('/add', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     new Team()
       .save({ name: req.body.name }, { method: 'insert' })
-      .then((model) => res.jsend.success(model.toJSON()))
-      .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+      .then((model) => res.jsend.success({ team: model.toJSON() }))
+      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
   })
 })
 
@@ -170,13 +208,13 @@ api.post('/add', (req, res) => {
  * @apiParam {String="0","1","2","steam","ps4","xbox"} playerPlatform Player's platform
  * @apiParam {String} playerId Player's unique id.
  *
- * @apiSuccess {Object} player Player object
+ * @apiUse TeamSuccess
  *
  * @apiUse InputError
  *
- * @apiUse PlayerNotFoundError
+ * @apiUse PlayerNotFound
  *
- * @apiUse TeamNotFoundError
+ * @apiUse TeamNotFound
  *
  * @apiUse DatabaseError
  */
@@ -189,20 +227,20 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     /* check if team exists */
     new Team({ id: req.params.id })
       .fetch()
-      .then(() => {
+      .then((team) => {
         new Player({ id: req.params.playerId, platform: platformId })
           .save({ team_id: req.params.id })
-          .then((model) => {
-            res.jsend.success(model.toJSON())
+          .then(() => {
+            res.jsend.success({ player: team.toJSON() })
           })
           .catch(Player.NoRowsUpdatedError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
-          .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+          .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
       })
       .catch(Team.NotFoundError, (err) => res.status(404).jsend.error('Team not found', 'TeamNotFound', err))
   })
@@ -217,13 +255,13 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
  * @apiParam {String="0","1","2","steam","ps4","xbox"} playerPlatform Player's platform
  * @apiParam {String} playerId Player's unique id.
  *
- * @apiSuccess {Object} player Player object
+ * @apiUse PlayerSuccess
  *
  * @apiUse InputError
  *
- * @apiUse PlayerNotFoundError
+ * @apiUse PlayerNotFound
  *
- * @apiUse TeamNotFoundError
+ * @apiUse TeamNotFound
  *
  * @apiUse DatabaseError
  */
@@ -236,16 +274,16 @@ api.get('/:id/remove-player/:playerPlatform/:playerId', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     new Player({ id: req.params.playerId, platform: platformId })
       .save({ team_id: null })
-      .then((model) => {
-        res.jsend.success(model.toJSON())
+      .then((player) => {
+        res.jsend.success({ player: player.toJSON() })
       })
-      .catch(Player.NoRowsUpdatedError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
-      .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+      .catch(Player.NoRowsUpdatedError, () => res.status(404).jsend.error({ message: 'PlayerNotFound' }))
+      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
   })
 })
 
@@ -258,18 +296,26 @@ api.get('/:id/remove-player/:playerPlatform/:playerId', (req, res) => {
  *
  * @apiSuccess {Object} success Success message
  *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": "success",
+ *       "data": "TeamDeleted"
+ *     }
+ *
+ *
  * @apiUse DatabaseError
  *
  * @apiUse InputError
  *
- * @apiUse TeamNotFoundError
+ * @apiUse TeamNotFound
  */
 api.get('/:id/delete', (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     new Team({
@@ -284,13 +330,13 @@ api.get('/:id/delete', (req, res) => {
         .update({ team_id: null })
         .then(() => {
           team.destroy({ require: true })
-            .then(() => res.jsend.success('Team deleted'))
-            .catch(Team.NoRowsDeletedError, (err) => res.status(500).jsend.error('Database error', 'Database', err))
+            .then(() => res.jsend.success('TeamDeleted'))
+            .catch(Team.NoRowsDeletedError, (err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
         })
-        .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+        .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
       })
-      .catch(Team.NotFoundError, (err) => res.status(404).jsend.error('Team not found', 'TeamNotFound', err))
-      .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+      .catch(Team.NotFoundError, () => res.status(404).jsend.error('TeamNotFound'))
+      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
   })
 })
 

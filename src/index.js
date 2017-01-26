@@ -3,8 +3,8 @@ import express from 'express'
 import expressValidator from 'express-validator'
 import bodyParser from 'body-parser'
 import cors from 'cors'
+import jsend from 'jsend'
 import validators from './util/validators'
-import jsend from './lib/jsend'
 
 import api from './api'
 

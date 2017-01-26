@@ -36,7 +36,7 @@ export default ({ app, chai }) => {
         addTeam(testTeam)
           .then((res) => {
             res.should.have.status(200)
-            teamId = res.body.data.id
+            teamId = res.body.data.team.id
           })
       )
     })
@@ -47,7 +47,7 @@ export default ({ app, chai }) => {
           .get(`/api/v1/team/${teamId}`)
           .then((res) => {
             res.should.have.status(200)
-            res.body.data.name.should.equal(testTeam.name)
+            res.body.data.team.name.should.equal(testTeam.name)
           })
       )
     })
@@ -67,7 +67,7 @@ export default ({ app, chai }) => {
           .get(`/api/v1/team/${teamId}`)
           .then((res) => {
             res.should.have.status(200)
-            res.body.data.players[0].id.should.equal(testSteamId)
+            res.body.data.team.players[0].id.should.equal(testSteamId)
           })
       )
     })
@@ -83,7 +83,7 @@ export default ({ app, chai }) => {
           .get(`/api/v1/team/${teamId}`)
           .then((res) => {
             res.should.have.status(200)
-            res.body.data.players.should.be.empty
+            res.body.data.team.players.should.be.empty
           })
       )
     })

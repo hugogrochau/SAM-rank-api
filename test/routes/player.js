@@ -61,7 +61,7 @@ export default ({ app, chai }) => {
         updatePlayer(testSteamId, 0, { name: 'KappaPride' })
           .then((res) => {
             res.should.have.status(200)
-            res.body.data.name.should.equal(testSteamName)
+            res.body.data.player.name.should.equal(testSteamName)
           })
       )
     )

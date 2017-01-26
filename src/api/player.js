@@ -4,32 +4,29 @@ import pick from 'lodash/pick'
 import Player from '../models/player'
 import PlayerUpdate from '../models/player-update'
 
-// TODO update documentation examples
 /**
- * @apiDefine PlayerNotFoundError
+ * @apiDefine PlayerNotFound
  *
- * @apiError PlayerNotFound Player could not be found
+ * @apiError PlayerNotFound Player does not exist
  *
  * @apiErrorExample PlayerNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
  *     {
  *       "status": "error",
- *       "message": "Player not found",
- *       "code": "PlayerNotFound"
+ *       "message": "PlayerNotFound"
  *     }
  */
 
 /**
  * @apiDefine InputError
  *
- * @apiError Input Input is invalid
+ * @apiError InputError Input is invalid
  *
- * @apiErrorExample Input Error-Response:
+ * @apiErrorExample InputError Error-Response:
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "status": "error",
- *       "message": "Input error",
- *       "code": "Input",
+ *       "message": "InputError",
  *       "data": {
  *         "playerId": {
  *           "param": "playerId",
@@ -43,82 +40,41 @@ import PlayerUpdate from '../models/player-update'
 /**
  * @apiDefine DatabaseError
  *
- * @apiError Database Error with the application database
+ * @apiError DatabaseError Error with the application database
  *
- *  @apiErrorExample Database Error-Response:
+ *  @apiErrorExample DatabaseError Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
  *       "status": "error",
- *       "message": "Database error",
- *       "code": "Database",
+ *       "message": "DatabaseError",
  *       "data": "DATABASE ERROR DATA"
  *     }
  */
 
 /**
- * @apiDefine ExternalAPIError
- *
- * @apiError ExternalAPI Error fetching player data from the external API
- *
- * @apiErrorExample ExternalAPI Error-Response:
- *     HTTP/1.1 500 Internal Server Error
- *     {
- *       "status": "error",
- *       "message": "Error fetching player from external API",
- *       "code": "ExternalAPI",
- *       "data": "EXTERNAL API ERROR DATA"
- *     }
- */
-
-/**
- * @apiDefine UnauthorizedError
+ * @apiDefine Unauthorized
  *
  * @apiError Unauthorized Not authorized to use resource
  *
- * @apiErrorExample ExternalAPI Error-Response:
+ * @apiErrorExample Unauthorized Error-Response:
  *     HTTP/1.1 500 Internal Server Error
  *     {
  *       "status": "error",
- *       "message": "Not authorized to use resource",
- *       "code": "Unauthorized"
+ *       "message": "Unauthorized",
  *     }
  */
 
-const api = Router()
-
 /**
- * @api {get} /player/ Get all Players
- * @apiName GetPlayers
- * @apiGroup Player
+ * @apiDefine PlayerSuccess
  *
- * @apiSuccess {Object[]} data List of Players
- *
- * @apiUse DatabaseError
- */
-api.get('/', (req, res) => {
-  new Player()
-    .fetchAll()
-    .then((model) => res.jsend.success(model.toJSON()))
-    .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
-})
-
-/**
- * @api {get} /player/:platform/:id Get Player information
- * @apiName GetPlayer
- * @apiGroup Player
- *
- * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
- * @apiParam {String} id Player's unique id.
- *
- * @apiSuccess {Object} data Player data
+ * @apiSuccess {Object} player Player data
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "data": {
- *         "type": "players",
- *         "id": "76561198013819031",
- *         "attributes": {
+ *         "player": {
+ *           "id": "76561198013819031",
  *           "platform": 0,
  *           "1v1": 1373,
  *           "1v1_games_played": 180,
@@ -142,9 +98,37 @@ api.get('/', (req, res) => {
  *         }
  *       }
  *     }
+ */
+
+const api = Router()
+
+/**
+ * @api {get} /player/ Get all Players
+ * @apiName GetPlayers
+ * @apiGroup Player
  *
+ * @apiSuccess {Object[]} players List of Players
  *
- * @apiUse PlayerNotFoundError
+ * @apiUse DatabaseError
+ */
+api.get('/', (req, res) => {
+  new Player()
+    .fetchAll()
+    .then((player) => res.jsend.success(player.toJSON()))
+    .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
+})
+
+/**
+ * @api {get} /player/:platform/:id Get Player information
+ * @apiName GetPlayer
+ * @apiGroup Player
+ *
+ * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
+ * @apiParam {String} id Player's unique id.
+ *
+ * @apiUse PlayerSuccess
+ *
+ * @apiUse PlayerNotFound
  *
  * @apiUse InputError
  *
@@ -156,7 +140,7 @@ api.get('/:platform/:id/', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     const platformId = Player.getPlatformIdFromString(req.params.platform)
@@ -166,9 +150,9 @@ api.get('/:platform/:id/', (req, res) => {
       platform: platformId,
     })
       .fetch({ require: true })
-      .then((model) => res.jsend.success(model.toJSON()))
-      .catch(Player.NotFoundError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
-      .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+      .then((player) => res.jsend.success(player.toJSON()))
+      .catch(Player.NotFoundError, () => res.status(404).jsend.error('PlayerNotFound'))
+      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
   })
 })
 
@@ -180,7 +164,7 @@ api.get('/:platform/:id/', (req, res) => {
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
  * @apiParam {String} id Player's unique id.
  *
- * @apiSuccess {Object} player Player object
+ * @apiUse PlayerSuccess
  *
  * @apiError DuplicatePlayer Player is already added
  *
@@ -188,8 +172,7 @@ api.get('/:platform/:id/', (req, res) => {
  *     HTTP/1.1 409 Conflict
  *     {
  *       "status": "error",
- *       "message": "Player already added",
- *       "code": "DuplicatePlayer"
+ *       "message": "DuplicatePlayer",
  *     }
  *
  * @apiUse DatabaseError
@@ -202,7 +185,7 @@ api.post('/add', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     const platformId = Player.getPlatformIdFromString(req.body.platform)
@@ -214,12 +197,12 @@ api.post('/add', (req, res) => {
 
     new Player()
       .save(attributes, { method: 'insert' })
-      .then((model) => res.jsend.success(model.toJSON()))
+      .then((player) => res.jsend.success({ player: player.toJSON() }))
       .catch((err) => {
         if (err.code === '23505' || err.errno === 19) {
-          return res.status(409).jsend.error('Player already added', 'DuplicatePlayer')
+          return res.status(409).jsend.error('DuplicatePlayer')
         }
-        return res.status(500).jsend.error('Database error', 'Database', err)
+        return res.status(500).jsend.error({ message: 'DatabaseError', data: err })
       })
   })
 })
@@ -235,11 +218,11 @@ api.post('/add', (req, res) => {
  * @apiParam {Number} 3v3 Player's 3v3 rank.
  * @apiParam {Number} 3v3s Player's 3v3s rank.
  *
- * @apiSuccess {Object} player Player object
+ * @apiUse PlayerSuccess
  *
- * @apiUse UnauthorizedError
+ * @apiUse Unauthorized
  *
- * @apiUse PlayerNotFoundError
+ * @apiUse PlayerNotFound
  *
  * @apiUse InputError
  *
@@ -249,7 +232,7 @@ api.post('/:platform/:id/update', (req, res) => {
   const columns = Player.updatableColumns
 
   if (req.ip.slice(-9) !== '127.0.0.1') {
-    return res.status(403).jsend.error('Not authorized to use resource', 'Unauthorized')
+    return res.status(403).jsend.error('Unauthorized')
   }
 
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
@@ -263,7 +246,7 @@ api.post('/:platform/:id/update', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     const platformId = Player.getPlatformIdFromString(req.params.platform)
@@ -273,19 +256,19 @@ api.post('/:platform/:id/update', (req, res) => {
     new Player({ id: req.params.id, platform: platformId })
       .set(updates)
       .save()
-      .then(() => {
+      .then((player) => {
         if (Object.keys(updates).length > 0) {
           new PlayerUpdate({ player_id: req.params.id, player_platform: platformId })
               .set(updates)
               .save()
-              .then(() => res.jsend.success(req.body))
-              .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+              .then(() => res.jsend.success({ player: player.toJSON() }))
+              .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
         } else {
           return res.jsend.success('Nothing to update')
         }
       })
-      .catch(Player.NotFoundError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
-      .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+      .catch(Player.NotFoundError, () => res.status(404).jsend.error('PlayerNotFound'))
+      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
   })
 })
 
@@ -303,7 +286,7 @@ api.post('/:platform/:id/update', (req, res) => {
  *     HTTP/1.1 200 OK
  *     {
  *       "status": "success",
- *       "data": "Player deleted"
+ *       "data": "PlayerDeleted"
  *     }
  *
  *
@@ -311,7 +294,7 @@ api.post('/:platform/:id/update', (req, res) => {
  *
  * @apiUse InputError
  *
- * @apiUse PlayerNotFoundError
+ * @apiUse PlayerNotFound
  */
 api.get('/:platform/:id/delete', (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
@@ -319,7 +302,7 @@ api.get('/:platform/:id/delete', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error('Input error', 'Input', result.mapped())
+      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     const platformId = Player.getPlatformIdFromString(req.params.platform)
@@ -329,9 +312,9 @@ api.get('/:platform/:id/delete', (req, res) => {
       platformId,
     })
       .destroy({ require: true })
-      .then(() => res.jsend.success('Player deleted'))
-      .catch(Player.NoRowsDeletedError, () => res.status(404).jsend.error('Player not found', 'PlayerNotFound'))
-      .catch((err) => res.status(500).jsend.error('Database error', 'Database', err))
+      .then(() => res.jsend.success('PlayerDeleted'))
+      .catch(Player.NoRowsDeletedError, () => res.status(404).jsend.error('PlayerNotFound'))
+      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
   })
 })
 

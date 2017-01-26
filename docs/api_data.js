@@ -33,19 +33,6 @@ define({ "api": [
         ]
       }
     },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Object",
-            "optional": false,
-            "field": "player",
-            "description": "<p>Player object</p>"
-          }
-        ]
-      }
-    },
     "error": {
       "fields": {
         "Error 4xx": [
@@ -58,13 +45,13 @@ define({ "api": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           }
         ]
@@ -72,24 +59,44 @@ define({ "api": [
       "examples": [
         {
           "title": "DuplicatePlayer Error-Response:",
-          "content": "HTTP/1.1 409 Conflict\n{\n  \"status\": \"error\",\n  \"message\": \"Player already added\",\n  \"code\": \"DuplicatePlayer\"\n}",
+          "content": "HTTP/1.1 409 Conflict\n{\n  \"status\": \"error\",\n  \"message\": \"DuplicatePlayer\",\n}",
           "type": "json"
         },
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         },
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         }
       ]
     },
     "version": "0.0.0",
     "filename": "src/api/player.js",
-    "groupTitle": "Player"
+    "groupTitle": "Player",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "player",
+            "description": "<p>Player data</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "get",
@@ -140,7 +147,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"data\": \"Player deleted\"\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"data\": \"PlayerDeleted\"\n}",
           "type": "json"
         }
       ]
@@ -154,37 +161,37 @@ define({ "api": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "PlayerNotFound",
-            "description": "<p>Player could not be found</p>"
+            "description": "<p>Player does not exist</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         },
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         },
         {
           "title": "PlayerNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Player not found\",\n  \"code\": \"PlayerNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"PlayerNotFound\",\n}",
           "type": "json"
         }
       ]
@@ -224,6 +231,9 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "src/api/player.js",
+    "groupTitle": "Player",
     "success": {
       "fields": {
         "Success 200": [
@@ -231,7 +241,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Object",
             "optional": false,
-            "field": "data",
+            "field": "player",
             "description": "<p>Player data</p>"
           }
         ]
@@ -239,14 +249,11 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"type\": \"players\",\n    \"id\": \"76561198013819031\",\n    \"attributes\": {\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
           "type": "json"
         }
       ]
     },
-    "version": "0.0.0",
-    "filename": "src/api/player.js",
-    "groupTitle": "Player",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -254,18 +261,18 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "PlayerNotFound",
-            "description": "<p>Player could not be found</p>"
+            "description": "<p>Player does not exist</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           }
         ]
@@ -273,16 +280,16 @@ define({ "api": [
       "examples": [
         {
           "title": "PlayerNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Player not found\",\n  \"code\": \"PlayerNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"PlayerNotFound\",\n}",
           "type": "json"
         },
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         },
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         }
@@ -302,7 +309,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Object[]",
             "optional": false,
-            "field": "data",
+            "field": "players",
             "description": "<p>List of Players</p>"
           }
         ]
@@ -317,14 +324,14 @@ define({ "api": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         }
@@ -381,6 +388,9 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "src/api/player.js",
+    "groupTitle": "Player",
     "success": {
       "fields": {
         "Success 200": [
@@ -389,14 +399,18 @@ define({ "api": [
             "type": "Object",
             "optional": false,
             "field": "player",
-            "description": "<p>Player object</p>"
+            "description": "<p>Player data</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
+          "type": "json"
+        }
+      ]
     },
-    "version": "0.0.0",
-    "filename": "src/api/player.js",
-    "groupTitle": "Player",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -410,40 +424,40 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "PlayerNotFound",
-            "description": "<p>Player could not be found</p>"
+            "description": "<p>Player does not exist</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "ExternalAPI Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Not authorized to use resource\",\n  \"code\": \"Unauthorized\"\n}",
+          "title": "Unauthorized Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Unauthorized\",\n}",
           "type": "json"
         },
         {
           "title": "PlayerNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Player not found\",\n  \"code\": \"PlayerNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"PlayerNotFound\",\n}",
           "type": "json"
         },
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         },
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         }
@@ -491,6 +505,9 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "src/api/team.js",
+    "groupTitle": "Team",
     "success": {
       "fields": {
         "Success 200": [
@@ -498,62 +515,66 @@ define({ "api": [
             "group": "Success 200",
             "type": "Object",
             "optional": false,
-            "field": "player",
-            "description": "<p>Player object</p>"
+            "field": "team",
+            "description": "<p>Team data</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"team\": {\n       id: 1,\n       name: 'Black Dragons',\n       image_url: null,\n       created_at: '2017-01-23T01:50:12.887Z',\n       last_update: '2017-01-23T01:50:12.887Z',\n       players: [],\n    }\n  }\n}",
+          "type": "json"
+        }
+      ]
     },
-    "version": "0.0.0",
-    "filename": "src/api/team.js",
-    "groupTitle": "Team",
     "error": {
       "fields": {
         "Error 4xx": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "PlayerNotFound",
-            "description": "<p>Player could not be found</p>"
+            "description": "<p>Player does not exist</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "TeamNotFound",
-            "description": "<p>Team could not be found</p>"
+            "description": "<p>Team doesn't exist</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         },
         {
           "title": "PlayerNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Player not found\",\n  \"code\": \"PlayerNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"PlayerNotFound\",\n}",
           "type": "json"
         },
         {
           "title": "TeamNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Team not found\",\n  \"code\": \"TeamNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"TeamNotFound\",\n}",
           "type": "json"
         },
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         }
@@ -579,6 +600,9 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "src/api/team.js",
+    "groupTitle": "Team",
     "success": {
       "fields": {
         "Success 200": [
@@ -587,39 +611,43 @@ define({ "api": [
             "type": "Object",
             "optional": false,
             "field": "team",
-            "description": "<p>Team object</p>"
+            "description": "<p>Team data</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"team\": {\n       id: 1,\n       name: 'Black Dragons',\n       image_url: null,\n       created_at: '2017-01-23T01:50:12.887Z',\n       last_update: '2017-01-23T01:50:12.887Z',\n       players: [],\n    }\n  }\n}",
+          "type": "json"
+        }
+      ]
     },
-    "version": "0.0.0",
-    "filename": "src/api/team.js",
-    "groupTitle": "Team",
     "error": {
       "fields": {
         "Error 4xx": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         },
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         }
@@ -656,7 +684,14 @@ define({ "api": [
             "description": "<p>Success message</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"data\": \"TeamDeleted\"\n}",
+          "type": "json"
+        }
+      ]
     },
     "version": "0.0.0",
     "filename": "src/api/team.js",
@@ -667,37 +702,37 @@ define({ "api": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "TeamNotFound",
-            "description": "<p>Team could not be found</p>"
+            "description": "<p>Team doesn't exist</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         },
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         },
         {
           "title": "TeamNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Team not found\",\n  \"code\": \"TeamNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"TeamNotFound\",\n}",
           "type": "json"
         }
       ]
@@ -722,6 +757,9 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "src/api/team.js",
+    "groupTitle": "Team",
     "success": {
       "fields": {
         "Success 200": [
@@ -729,7 +767,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Object",
             "optional": false,
-            "field": "data",
+            "field": "team",
             "description": "<p>Team data</p>"
           }
         ]
@@ -737,50 +775,47 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"id\": \"1\",\n    \"attributes\": {\n      \"name\": \"Black Dragons\",\n      \"image_url\": \"http://d31qciy1ywu4xk.cloudfront.net/bd-logo-white-bg.png\",\n      \"created_at\": \"2017-01-15T19:59:29.858Z\",\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"players\": []\n    }\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"team\": {\n       id: 1,\n       name: 'Black Dragons',\n       image_url: null,\n       created_at: '2017-01-23T01:50:12.887Z',\n       last_update: '2017-01-23T01:50:12.887Z',\n       players: [],\n    }\n  }\n}",
           "type": "json"
         }
       ]
     },
-    "version": "0.0.0",
-    "filename": "src/api/team.js",
-    "groupTitle": "Team",
     "error": {
       "fields": {
         "Error 4xx": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "TeamNotFound",
-            "description": "<p>Team could not be found</p>"
+            "description": "<p>Team doesn't exist</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         },
         {
           "title": "TeamNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Team not found\",\n  \"code\": \"TeamNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"TeamNotFound\",\n}",
           "type": "json"
         },
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         }
@@ -800,7 +835,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Object[]",
             "optional": false,
-            "field": "data",
+            "field": "teams",
             "description": "<p>List of Teams</p>"
           }
         ]
@@ -815,14 +850,14 @@ define({ "api": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         }
@@ -870,6 +905,9 @@ define({ "api": [
         ]
       }
     },
+    "version": "0.0.0",
+    "filename": "src/api/team.js",
+    "groupTitle": "Team",
     "success": {
       "fields": {
         "Success 200": [
@@ -878,61 +916,65 @@ define({ "api": [
             "type": "Object",
             "optional": false,
             "field": "player",
-            "description": "<p>Player object</p>"
+            "description": "<p>Player data</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": null\n    }\n  }\n}",
+          "type": "json"
+        }
+      ]
     },
-    "version": "0.0.0",
-    "filename": "src/api/team.js",
-    "groupTitle": "Team",
     "error": {
       "fields": {
         "Error 4xx": [
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Input",
+            "field": "InputError",
             "description": "<p>Input is invalid</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "PlayerNotFound",
-            "description": "<p>Player could not be found</p>"
+            "description": "<p>Player does not exist</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "TeamNotFound",
-            "description": "<p>Team could not be found</p>"
+            "description": "<p>Team doesn't exist</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
-            "field": "Database",
+            "field": "DatabaseError",
             "description": "<p>Error with the application database</p>"
           }
         ]
       },
       "examples": [
         {
-          "title": "Input Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"Input error\",\n  \"code\": \"Input\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
           "type": "json"
         },
         {
           "title": "PlayerNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Player not found\",\n  \"code\": \"PlayerNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"PlayerNotFound\",\n}",
           "type": "json"
         },
         {
           "title": "TeamNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"Team not found\",\n  \"code\": \"TeamNotFound\"\n}",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"TeamNotFound\",\n}",
           "type": "json"
         },
         {
-          "title": "Database Error-Response:",
+          "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
           "type": "json"
         }
