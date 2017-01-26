@@ -4,6 +4,8 @@ Rocket League South America API
 [![Build Status](https://travis-ci.org/hugogrochau/rocketleaguesam-api.svg?branch=master)](https://travis-ci.org/hugogrochau/rocketleaguesam-api)
 [![Dependency Status](https://www.versioneye.com/user/projects/588573a5e25f5900365362da/badge.svg)](https://www.versioneye.com/user/projects/588573a5e25f5900365362da)
 
+## [API Documentation](https://hugogrochau.github.io/rocketleaguesam-api/)
+
 ## Libraries
 * Node.js
 * Express
@@ -24,6 +26,7 @@ Rocket League South America API
 
 ## Docs
 API docs are defined with `apidoc`, build them with `npm run docs`
+
 
 ## Authors
 * @hugogrochau
