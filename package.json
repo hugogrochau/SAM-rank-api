@@ -12,9 +12,14 @@
     "docs": "apidoc -i src/api -o docs/",
     "migrate": "knex migrate:latest --env development",
     "lint": "eslint src test",
+    "lint:staged": "lint-staged",
     "all": "npm run lint && npm run test",
     "updater": "npm run -s build && node -r dotenv/config dist/scripts/update.js"
   },
+  "lint-staged": {
+    "*.js": "lint"
+  },
+  "pre-commit": "lint:staged",
   "apidoc": {
     "name": "rocketleaguesam-api",
     "version": "0.0.2",
@@ -47,6 +52,7 @@
     "isomorphic-fetch": "^2.2.1",
     "jsonapi-mapper": "^1.0.0-beta.10",
     "knex": "^0.12.6",
+    "lint-staged": "^3.2.8",
     "lodash": "^4.17.4",
     "pg": "^6.1.2",
     "resource-router-middleware": "^0.6.0",
@@ -63,6 +69,7 @@
     "jsend": "^1.0.2",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
+    "pre-commit": "^1.2.2",
     "sqlite3": "^3.1.8"
   },
   "keywords": [
