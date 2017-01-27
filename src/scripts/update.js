@@ -111,16 +111,13 @@ const updatePlayer = (player, tracker) =>
       if (res.status === 200) {
         return res.json()
       }
-      throw new Error(`Error status from local api: ${res.status}`)
-    })
-    .catch((err) => {
-      throw new Error(`Error updating ${player.name} with local api: ${err}`)
+      throw new Error(`Error updating ${player.name} with local api: ${res.status}`)
     })
     .then((jsonData) => {
       if (jsonData.data.updated) {
         return `Updated player: ${player.name}`
       }
-      return `No updated needed for player: ${player.name}`
+      return `No update needed for player: ${player.name}`
     })
 
 // queue definition

@@ -232,6 +232,7 @@ api.post('/add', (req, res) => {
  */
 api.post('/:platform/:id/update', (req, res) => {
   const columns = Player.updatableColumns
+  let updated = false
 
   if (req.ip.slice(-9) !== '127.0.0.1') {
     return res.status(403).jsend.error('Unauthorized')
@@ -239,47 +240,45 @@ api.post('/:platform/:id/update', (req, res) => {
 
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
-
   req.checkBody('name').optional().isValidName()
-
   columns.slice(1).forEach((column) => {
     req.checkBody(column).optional().isInt()
   })
 
   req.getValidationResult().then((result) => {
-    if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+    if (result.isEmpty()) {
+      const platformId = Player.getPlatformIdFromString(req.params.platform)
+      return new Player({ id: req.params.id, platform: platformId }).fetch()
+    }
+    res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+  })
+  .then((player) => {
+    // Filter only updates that change existing values
+    const validUpdates = Object.keys(req.body).filter((k) =>
+      String(player.get(k)) !== String(req.body[k]) &&
+      columns.includes(k)
+    )
+
+    if (validUpdates.length > 0) {
+      updated = true
     }
 
-    const platformId = Player.getPlatformIdFromString(req.params.platform)
-
-    new Player({ id: req.params.id, platform: platformId })
-      .fetch()
-        .then((player) => {
-          // Filter only valid updates that change values
-          const validUpdates = Object.keys(req.body).filter((k) =>
-            String(player.get(k)) !== String(req.body[k]) &&
-            columns.includes(k)
-          )
-
-          if (validUpdates.length > 0) {
-            const updates = pick(req.body, validUpdates)
-            player.set(updates)
-              .save()
-              .then((updatedPlayer) => {
-                new PlayerUpdate({ player_id: req.params.id, player_platform: platformId })
-                    .set(updates)
-                    .save()
-                    .then(() => res.jsend.success({ player: updatedPlayer.toJSON(), updated: true }))
-                    .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
-              })
-              .catch(Player.NotFoundError, () => res.status(404).jsend.error('PlayerNotFound'))
-              .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
-          } else {
-            res.jsend.success({ player: player.toJSON(), updated: false })
-          }
-        })
+    const updates = pick(req.body, validUpdates)
+    return player
+      .set(updates)
+      .save()
   })
+  .then((player) => {
+    if (updated) {
+      new PlayerUpdate({ player_id: player.get('id'), player_platform: player.get('platform') })
+        .save()
+        .then(() => res.jsend.success({ player: player.toJSON(), updated }))
+    } else {
+      res.jsend.success({ player: player.toJSON(), updated })
+    }
+  })
+  .catch(Player.NotFoundError, () => res.status(404).jsend.error('PlayerNotFound'))
+  .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
 })
 
 /**
