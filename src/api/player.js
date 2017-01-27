@@ -253,13 +253,11 @@ api.post('/:platform/:id/update', (req, res) => {
     res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
   })
   .then((player) => {
-    // Filter only updates that change existing values
-    const validUpdates = Object.keys(req.body).filter((k) =>
-      String(player.get(k)) !== String(req.body[k]) &&
-      columns.includes(k)
-    )
-
-    updates = pick(req.body, validUpdates)
+    // Filter only updates that change existing values ~ magic ~
+    updates = Object.keys(req.body).reduce((acc, k) =>
+      columns.includes(k) && String(player.get(k)) !== String(req.body[k]) ?
+        { ...acc, [k]: req.body[k] } : { ...acc }
+    , {})
 
     return player
       .set(updates)
