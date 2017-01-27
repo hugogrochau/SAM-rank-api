@@ -68,7 +68,7 @@ const pullPlayers = () => {
         .then((jsonData) => {
           console.log('Pulled players')
 
-          const playersToUpdate = jsonData.data.filter((p) => shouldUpdate(p))
+          const playersToUpdate = jsonData.data.players.filter((p) => shouldUpdate(p))
 
           // sort by update time
           playersToUpdate.sort((a, b) =>
