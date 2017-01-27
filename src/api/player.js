@@ -232,7 +232,7 @@ api.post('/add', (req, res) => {
  */
 api.post('/:platform/:id/update', (req, res) => {
   const columns = Player.updatableColumns
-  let updated = false
+  let updates = {}
 
   if (req.ip.slice(-9) !== '127.0.0.1') {
     return res.status(403).jsend.error('Unauthorized')
@@ -259,18 +259,17 @@ api.post('/:platform/:id/update', (req, res) => {
       columns.includes(k)
     )
 
-    if (validUpdates.length > 0) {
-      updated = true
-    }
+    updates = pick(req.body, validUpdates)
 
-    const updates = pick(req.body, validUpdates)
     return player
       .set(updates)
       .save()
   })
   .then((player) => {
+    const updated = Object.keys(updates).length > 0
     if (updated) {
       new PlayerUpdate({ player_id: player.get('id'), player_platform: player.get('platform') })
+        .set(updates)
         .save()
         .then(() => res.jsend.success({ player: player.toJSON(), updated }))
     } else {
