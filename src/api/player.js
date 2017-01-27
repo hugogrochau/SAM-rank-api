@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import pick from 'lodash/pick'
 
 import Player from '../models/player'
 import PlayerUpdate from '../models/player-update'
@@ -255,7 +254,7 @@ api.post('/:platform/:id/update', (req, res) => {
   .then((player) => {
     // Filter only updates that change existing values ~ magic ~
     updates = Object.keys(req.body).reduce((acc, k) =>
-      columns.includes(k) && String(player.get(k)) !== String(req.body[k]) ?
+      columns.includes(k) && String(player.get(k)).toLowerCase() !== String(req.body[k]).toLowerCase() ?
         { ...acc, [k]: req.body[k] } : { ...acc }
     , {})
 
