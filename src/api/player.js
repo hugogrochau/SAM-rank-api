@@ -253,24 +253,32 @@ api.post('/:platform/:id/update', (req, res) => {
 
     const platformId = Player.getPlatformIdFromString(req.params.platform)
 
-    const updates = pick(req.body, columns)
-
     new Player({ id: req.params.id, platform: platformId })
-      .set(updates)
-      .save()
-      .then((player) => {
-        if (Object.keys(updates).length > 0) {
-          new PlayerUpdate({ player_id: req.params.id, player_platform: platformId })
-              .set(updates)
+      .fetch()
+        .then((player) => {
+          // Filter only valid updates that change values
+          const validUpdates = Object.keys(req.body).filter((k) =>
+            String(player.get(k)) !== String(req.body[k]) &&
+            columns.includes(k)
+          )
+
+          if (validUpdates.length > 0) {
+            const updates = pick(req.body, validUpdates)
+            player.set(updates)
               .save()
-              .then(() => res.jsend.success({ player: player.toJSON() }))
+              .then((updatedPlayer) => {
+                new PlayerUpdate({ player_id: req.params.id, player_platform: platformId })
+                    .set(updates)
+                    .save()
+                    .then(() => res.jsend.success({ player: updatedPlayer.toJSON(), updated: true }))
+                    .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
+              })
+              .catch(Player.NotFoundError, () => res.status(404).jsend.error('PlayerNotFound'))
               .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
-        } else {
-          return res.jsend.success('Nothing to update')
-        }
-      })
-      .catch(Player.NotFoundError, () => res.status(404).jsend.error('PlayerNotFound'))
-      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
+          } else {
+            res.jsend.success({ player: player.toJSON(), updated: false })
+          }
+        })
   })
 })
 

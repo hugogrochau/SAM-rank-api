@@ -56,15 +56,24 @@ export default ({ app, chai }) => {
       )
     })
 
-    describe('/:platform/:id/update', () =>
+    describe('/:platform/:id/update', () => {
       it('Should update a player', () =>
         updatePlayer(testSteamId, 0, { name: 'KappaPride' })
           .then((res) => {
             res.should.have.status(200)
             res.body.data.player.name.should.equal(testSteamName)
+            res.body.data.updated.should.equal(true)
           })
       )
-    )
+
+      it('Should recognize unneeded updates', () =>
+        updatePlayer(testSteamId, 0, { name: 'KappaPride' })
+          .then((res) => {
+            res.should.have.status(200)
+            res.body.data.updated.should.equal(false)
+          })
+      )
+    })
 
     describe('/:platform/:id/delete', () => {
       it('Should delete a player', () =>
