@@ -116,7 +116,7 @@ const api = Router()
 api.get('/', (req, res) => {
   new Player()
     .fetchAll()
-    .then((player) => res.jsend.success(player.toJSON()))
+    .then((players) => res.jsend.success({ players: players.toJSON() }))
     .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
 })
 
