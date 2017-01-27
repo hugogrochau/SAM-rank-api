@@ -11,6 +11,8 @@ if (!process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_KEY || !process.env.RLTRACKER_
   process.exit(-1)
 }
 
+// Settings
+
 const PRIORITY_UNIT = 15 // minutes difference between priorities
 
 const PULL_DELAY = 60 // seconds to wait before pulling players after a full update is done
@@ -38,22 +40,30 @@ API_KEY[TRACKER.RLTRACKER_PRO] = process.env.RLTRACKER_PRO_API_KEY
 API_KEY[TRACKER.ROCKETLEAGUE_TRACKER_NETWORK] = process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_KEY
 
 
+// Helper functions
+
+// Get time increased based on player priority
 const getAdjustedTime = (time, priority) =>
   time + (priority * PRIORITY_UNIT * 60 * 1000)
 
-// should update every PRIORITY * 60 min
 const shouldUpdate = (player) => {
+  // Time between now and last update in ms
   const timeDelta = Date.now() - (new Date(player.last_update)).getTime()
-  const minTimeToUpdate = getAdjustedTime(0, player.priority)
+  // Time between updates based on player priority
+  const timeBetweenUpdates = getAdjustedTime(0, player.priority)
   const justCreated = player.last_update === player.created_at
-  return (timeDelta > minTimeToUpdate && player.priority > 0) || justCreated
+  // Return true if it's time to update or if it's a new player
+  return (timeDelta > timeBetweenUpdates && player.priority > 0) || justCreated
 }
 
+// Time to wait before next request to tracker
 const timeToWaitBeforeNextRequest = (rate, lastRequestTime) => {
+  //           rate in ms              ms passed since last request
   const time = ((60 * 1000) / rate) - (Date.now() - lastRequestTime)
   return time < 0 ? 0 : time
 }
 
+// function to be called at the start and when the queue depletes
 const pullPlayers = () => {
   console.log(`Starting full update at ${new Date().toISOString()}...`)
 
@@ -63,60 +73,57 @@ const pullPlayers = () => {
   isUp = isUp.map(() => true)
 
   fetch(`${LOCAL_API}/player`)
-    .then((response) => {
-      response.json()
-        .then((jsonData) => {
-          console.log('Pulled players')
+    .then((response) => response.json())
+    .catch((err) => console.log(`Error fetching players ${err}`))
+    .then((jsonData) => {
+      console.log('Pulled players')
+      const playersToUpdate = jsonData.data.players.filter(shouldUpdate)
 
-          const playersToUpdate = jsonData.data.players.filter((p) => shouldUpdate(p))
+      // sort by update time
+      playersToUpdate.sort((a, b) =>
+        getAdjustedTime((new Date(a.last_update).getTime()), a.priority) -
+        getAdjustedTime((new Date(b.last_update)).getTime(), b.priority))
 
-          // sort by update time
-          playersToUpdate.sort((a, b) =>
-            getAdjustedTime((new Date(a.last_update).getTime()), a.priority) -
-            getAdjustedTime((new Date(b.last_update)).getTime(), b.priority))
+      console.log('Players to update:')
+      console.log(playersToUpdate.map((p) => p.name))
 
-          console.log('Players to update:')
-          console.log(playersToUpdate.map((p) => p.name))
-
-          q.push(playersToUpdate, (err) => { if (err) console.log(err) })
-        })
+      q.push(playersToUpdate, (err) => { if (err) console.log(err) })
     })
     .catch((err) => console.log(`Error fetching players ${err}`))
 }
 
-const updatePlayer = (player, tracker) => new Promise((resolve, reject) => {
+// pulls player info from tracker and updates through the api
+const updatePlayer = (player, tracker) =>
   rlrankapi.getPlayerInformation(player.platform, player.id, API_KEY[tracker], tracker)
-      .then((stats) => {
-        fetch(`${LOCAL_API}/player/${player.platform}/${player.id}/update`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(stats),
-        })
-          .then((res) => {
-            if (res.status === 200) {
-              res.json()
-                .then((jsonData) => {
-                  if (jsonData.data.updated) {
-                    resolve(`Updated player: ${player.name}`)
-                  } else {
-                    resolve(`No updated needed for player: ${player.name}`)
-                  }
-                })
-            } else {
-              reject(`Error status from local api: ${res.status}`)
-            }
-          })
-          .catch((err) =>
-            reject(`Error updating ${player.name} with local api: ${err}`)
-          )
+    .then((stats) =>
+      fetch(`${LOCAL_API}/player/${player.platform}/${player.id}/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(stats),
       })
-      .catch((err) =>
-        reject(`Error updating ${player.name} with external api: ${err}`)
-      )
-})
+    )
+    .catch((err) => {
+      throw new Error(`Error updating ${player.name} with external api: ${err}`)
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        return res.json()
+      }
+      throw new Error(`Error status from local api: ${res.status}`)
+    })
+    .catch((err) => {
+      throw new Error(`Error updating ${player.name} with local api: ${err}`)
+    })
+    .then((jsonData) => {
+      if (jsonData.data.updated) {
+        return `Updated player: ${player.name}`
+      }
+      return `No updated needed for player: ${player.name}`
+    })
 
+// queue definition
 let q = queue((player, callback) => {
   const filteredTrackers = values(TRACKER).filter((t) =>
     isUp[t] && API_KEY[t] && // remove if tracker is marked as down or if we don't have the key
@@ -157,9 +164,11 @@ let q = queue((player, callback) => {
   }, trackerTimeToWait)
 }, 1)
 
+// pullPlayers again when queue finishes
 q.drain = () => {
   console.log(`Finished full update. Pulling players again in ${PULL_DELAY} seconds`)
   setTimeout(pullPlayers, PULL_DELAY * 1000)
 }
 
+// pullPlayers on script start
 pullPlayers()
