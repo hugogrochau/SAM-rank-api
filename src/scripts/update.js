@@ -96,9 +96,17 @@ const updatePlayer = (player, tracker) => new Promise((resolve, reject) => {
         })
           .then((res) => {
             if (res.status === 200) {
-              resolve(`Updated player: ${player.name}`)
+              res.json()
+                .then((jsonData) => {
+                  if (jsonData.data.updated) {
+                    resolve(`Updated player: ${player.name}`)
+                  } else {
+                    resolve(`No updated needed for player: ${player.name}`)
+                  }
+                })
+            } else {
+              reject(`Error status from local api: ${res.status}`)
             }
-            reject(`Error status from local api: ${res.status}`)
           })
           .catch((err) =>
             reject(`Error updating ${player.name} with local api: ${err}`)
