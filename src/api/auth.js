@@ -107,14 +107,42 @@ api.post('/', (req, res) => {
  *
  * @apiParam {String} return_url URL to return to after authorizing with steam
  * @apiParam {String} realm OpenID realm
+ * @apiParam {String} response_url url returned from Steam
  *
  * @apiSuccess {Object} data URL to redirect to for steam OpenID
+ *
+ * @apiSuccess {Object} player Player data
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "status": success,
- *       "data": "https://steamcommunity.com/openid/login?..."
+ *       "data": {
+ *         "player": {
+ *           "id": "76561198013819031",
+ *           "platform": 0,
+ *           "1v1": 1373,
+ *           "1v1_games_played": 180,
+ *           "2v2": 1409,
+ *           "2v2_games_played": 564,
+ *           "3v3": 1150,
+ *           "3v3_games_played": 520,
+ *           "3v3s": 1110,
+ *           "3v3s_games_played": 67,
+ *           "last_update": "2017-01-15T19:59:29.858Z",
+ *           "1v1_tier": 15,
+ *           "2v2_tier": 15,
+ *           "3v3_tier": 15,
+ *           "3v3s_tier": 15,
+ *           "1v1_division": 1,
+ *           "2v2_division": 1,
+ *           "3v3_division": 1,
+ *           "3v3s_division": 3,
+ *           "name": "bd | Freedom",
+ *           "created_at": 2017-01-15T19:59:29.858Z,
+ *           "priority": 2,
+ *           "team_id": null
+ *         }
+ *       }
  *     }
  *
  * @apiUse InputError
@@ -163,7 +191,7 @@ api.post('/verify', (req, res) => {
             })
             .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
         } else {
-          res.jsend.error('Failure')
+          res.status(403).jsend.error('Unauthorized')
         }
       })
     }
