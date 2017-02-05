@@ -56,6 +56,7 @@
     "lodash": "^4.17.4",
     "openid": "^2.0.6",
     "pg": "^6.1.2",
+    "rand-token": "^0.3.0",
     "resource-router-middleware": "^0.6.0",
     "validator": "^6.2.1"
   },
