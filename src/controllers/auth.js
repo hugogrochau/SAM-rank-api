@@ -1,6 +1,7 @@
 import openid from 'openid'
 import jwt from 'jwt-simple'
 import Player from '../models/player'
+import rlApi, { TRACKER } from '../lib/rocket-league-rank-api'
 
 const authenticate = (returnUrl, realm) => {
   const relyingParty = new openid.RelyingParty(returnUrl, realm, true, false, [])
@@ -41,12 +42,14 @@ const verify = (returnUrl, realm, responseUrl) => {
           })
           // new player
           .catch(Player.NotFoundError, () => {
-            new Player({
-              id: playerId,
-              platform: 0,
-            })
-              .save({ method: 'insert' })
-              .then(() => resolve({ playerId, token }))
+            rlApi.getPlayerInformation(0, playerId, process.env.RLTRACKER_PRO_API_KEY, TRACKER.RLTRACKER_PRO)
+              .then((playerData) =>
+                new Player({
+                  id: playerId,
+                  platform: 0,
+                }).save(playerData, { method: 'insert' })
+              )
+              .then((player) => resolve({ player: player.toJSON(), token }))
           })
           .catch((err) => reject({ message: 'DatabaseError', data: err }))
       }

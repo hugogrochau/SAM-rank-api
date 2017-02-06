@@ -12,7 +12,7 @@ const jwtOptions = {
 
 const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   player.getPlayer(0, payload.sub)
-    .then((playerInfo) => done(null, playerInfo))
+    .then((playerInfo) => done(null, playerInfo.player))
     .catch((err) => done(err, false))
 })
 

@@ -51,9 +51,10 @@ import auth from '../controllers/auth'
 const api = Router()
 
 /**
- * @api {post} /auth/authenticate Authenticate with the steam OpenID 2 service
+ * @api {post} /auth/authenticate Authenticate
  * @apiName Authenticate
  * @apiGroup Auth
+ * @apiDescription Authenticate with the steam OpenID 2 service
  *
  * @apiParam {String} return_url URL to return to after authenticating with steam
  * @apiParam {String} realm OpenID realm
@@ -91,9 +92,10 @@ api.post('/authenticate', (req, res) => {
 })
 
 /**
- * @api {post} /auth/verify/ Verify if the login is valid with the steam OpenID 2 service
+ * @api {post} /auth/verify/ Verify
  * @apiName Verify
  * @apiGroup Auth
+ * @apiDescription Verify if the login is valid with the steam OpenID 2 service
  *
  * @apiParam {String} return_url URL to return to after authenticating with steam
  * @apiParam {String} realm OpenID realm
