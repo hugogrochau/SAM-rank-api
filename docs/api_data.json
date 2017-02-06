@@ -1,6 +1,202 @@
 [
   {
     "type": "post",
+    "url": "/auth/authenticate",
+    "title": "Authenticate with the steam OpenID 2 service",
+    "name": "Authenticate",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "return_url",
+            "description": "<p>URL to return to after authenticating with steam</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "realm",
+            "description": "<p>OpenID realm</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>URL to redirect to for steam OpenID</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": success,\n  \"data\": \"https://steamcommunity.com/openid/login?...\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/auth.js",
+    "groupTitle": "Auth",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "InputError",
+            "description": "<p>Input is invalid</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "DatabaseError",
+            "description": "<p>Error with the application database</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Not authorized to use resource</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "type": "json"
+        },
+        {
+          "title": "DatabaseError Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Unauthorized Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Unauthorized\",\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/auth/verify/",
+    "title": "Verify if the login is valid with the steam OpenID 2 service",
+    "name": "Verify",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "return_url",
+            "description": "<p>URL to return to after authenticating with steam</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "realm",
+            "description": "<p>OpenID realm</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "response_url",
+            "description": "<p>url returned from Steam</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>The JWT</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "playerId",
+            "description": "<p>the player Id</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n \"status\": \"success\",\n \"data\": {\n   \"token\": \"sdifjasfsaf2skgsjg\",\n   \"playerId\": \"71837465768574657\"\n  }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/auth.js",
+    "groupTitle": "Auth",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "InputError",
+            "description": "<p>Input is invalid</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "DatabaseError",
+            "description": "<p>Error with the application database</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Not authorized to use resource</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "type": "json"
+        },
+        {
+          "title": "DatabaseError Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Unauthorized Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Unauthorized\",\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
     "url": "/player/add",
     "title": "Add Player",
     "name": "AddPlayer",
@@ -93,105 +289,6 @@
         {
           "title": "Success-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": 2017-01-15T19:59:29.858Z,\n      \"priority\": 2,\n      \"team_id\": null\n    }\n  }\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "get",
-    "url": "/player/:platform/:id/delete",
-    "title": "Delete Player",
-    "name": "DeletePlayer",
-    "group": "Player",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "allowedValues": [
-              "\"0\"",
-              "\"1\"",
-              "\"2\"",
-              "\"steam\"",
-              "\"ps4\"",
-              "\"xbox\""
-            ],
-            "optional": false,
-            "field": "platform",
-            "description": "<p>Player's platform</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Player's unique id</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Object",
-            "optional": false,
-            "field": "success",
-            "description": "<p>Success message</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"data\": \"PlayerDeleted\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/player.js",
-    "groupTitle": "Player",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "DatabaseError",
-            "description": "<p>Error with the application database</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "InputError",
-            "description": "<p>Input is invalid</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "PlayerNotFound",
-            "description": "<p>Player does not exist</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "DatabaseError Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "InputError Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
-          "type": "json"
-        },
-        {
-          "title": "PlayerNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"PlayerNotFound\",\n}",
           "type": "json"
         }
       ]
@@ -333,6 +430,105 @@
         {
           "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/player/:platform/:id/remove",
+    "title": "Remove Player",
+    "name": "RemovePlayer",
+    "group": "Player",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "allowedValues": [
+              "\"0\"",
+              "\"1\"",
+              "\"2\"",
+              "\"steam\"",
+              "\"ps4\"",
+              "\"xbox\""
+            ],
+            "optional": false,
+            "field": "platform",
+            "description": "<p>Player's platform</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Player's unique id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"data\": \"PlayerRemoved\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/player.js",
+    "groupTitle": "Player",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "DatabaseError",
+            "description": "<p>Error with the application database</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "InputError",
+            "description": "<p>Input is invalid</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PlayerNotFound",
+            "description": "<p>Player does not exist</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "DatabaseError Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "type": "json"
+        },
+        {
+          "title": "PlayerNotFound Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"PlayerNotFound\",\n}",
           "type": "json"
         }
       ]
@@ -515,15 +711,15 @@
             "group": "Success 200",
             "type": "Object",
             "optional": false,
-            "field": "team",
-            "description": "<p>Team data</p>"
+            "field": "player",
+            "description": "<p>Player data</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"team\": {\n       id: 1,\n       name: 'Black Dragons',\n       image_url: null,\n       created_at: '2017-01-23T01:50:12.887Z',\n       last_update: '2017-01-23T01:50:12.887Z',\n       players: [],\n    }\n  }\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"data\": {\n    \"player\": {\n      \"id\": \"76561198013819031\",\n      \"platform\": 0,\n      \"1v1\": 1373,\n      \"1v1_games_played\": 180,\n      \"2v2\": 1409,\n      \"2v2_games_played\": 564,\n      \"3v3\": 1150,\n      \"3v3_games_played\": 520,\n      \"3v3s\": 1110,\n      \"3v3s_games_played\": 67,\n      \"last_update\": \"2017-01-15T19:59:29.858Z\",\n      \"1v1_tier\": 15,\n      \"2v2_tier\": 15,\n      \"3v3_tier\": 15,\n      \"3v3s_tier\": 15,\n      \"1v1_division\": 1,\n      \"2v2_division\": 1,\n      \"3v3_division\": 1,\n      \"3v3s_division\": 3,\n      \"name\": \"bd | Freedom\",\n      \"created_at\": 2017-01-15T19:59:29.858Z,\n      \"priority\": 2,\n      \"team_id\": null\n    }\n  }\n}",
           "type": "json"
         }
       ]
@@ -649,90 +845,6 @@
         {
           "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
-    "type": "get",
-    "url": "/team/:id/delete",
-    "title": "Delete team",
-    "name": "DeleteTeam",
-    "group": "Team",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "id",
-            "description": "<p>Team's unique id.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Object",
-            "optional": false,
-            "field": "success",
-            "description": "<p>Success message</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"data\": \"TeamDeleted\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "src/api/team.js",
-    "groupTitle": "Team",
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "DatabaseError",
-            "description": "<p>Error with the application database</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "InputError",
-            "description": "<p>Input is invalid</p>"
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "TeamNotFound",
-            "description": "<p>Team doesn't exist</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "DatabaseError Error-Response:",
-          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "InputError Error-Response:",
-          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
-          "type": "json"
-        },
-        {
-          "title": "TeamNotFound Error-Response:",
-          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"TeamNotFound\",\n}",
           "type": "json"
         }
       ]
@@ -976,6 +1088,90 @@
         {
           "title": "DatabaseError Error-Response:",
           "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/team/:id/remove",
+    "title": "Remove team",
+    "name": "RemoveTeam",
+    "group": "Team",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Team's unique id.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"data\": \"TeamRemoved\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/team.js",
+    "groupTitle": "Team",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "DatabaseError",
+            "description": "<p>Error with the application database</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "InputError",
+            "description": "<p>Input is invalid</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "TeamNotFound",
+            "description": "<p>Team doesn't exist</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "DatabaseError Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "type": "json"
+        },
+        {
+          "title": "TeamNotFound Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"TeamNotFound\",\n}",
           "type": "json"
         }
       ]
