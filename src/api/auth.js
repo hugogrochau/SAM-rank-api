@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import openid from 'openid'
-import randToken from 'rand-token'
+import jwt from 'jwt-simple'
 import Player from '../models/player'
 
 /**
@@ -76,6 +76,7 @@ const api = Router()
  * @apiUse Unauthorized
  *
  */
+// TODO move to controller
 api.post('/', (req, res) => {
   req.checkBody('return_url').isURL()
   req.checkBody('realm').isURL()
@@ -116,31 +117,16 @@ api.post('/', (req, res) => {
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "data": {
- *         "player": {
- *           "id": "76561198013819031",
- *           "platform": 0,
- *           "1v1": 1373,
- *           "1v1_games_played": 180,
- *           "2v2": 1409,
- *           "2v2_games_played": 564,
- *           "3v3": 1150,
- *           "3v3_games_played": 520,
- *           "3v3s": 1110,
- *           "3v3s_games_played": 67,
- *           "last_update": "2017-01-15T19:59:29.858Z",
- *           "1v1_tier": 15,
- *           "2v2_tier": 15,
- *           "3v3_tier": 15,
- *           "3v3s_tier": 15,
- *           "1v1_division": 1,
- *           "2v2_division": 1,
- *           "3v3_division": 1,
- *           "3v3s_division": 3,
- *           "name": "bd | Freedom",
- *           "created_at": 2017-01-15T19:59:29.858Z,
- *           "priority": 2,
- *           "team_id": null
+ *      "status": "success",
+ *         "data": {
+ *           "player": {
+ *             "id": "76561198013819031",
+ *             "platform": 0,
+ *             "token_created_at": "2017-02-05T01:56:08.451Z",
+ *             "token": "pcs4GE8SzH64dib8",
+ *             "last_update": "2017-02-05T01:56:08.454Z",
+ *             "created_at": "2017-02-05T01:56:08.454Z",
+ *             "sum": null
  *         }
  *       }
  *     }
@@ -164,30 +150,29 @@ api.post('/verify', (req, res) => {
       // NOTE: Passing just the URL is also possible
     } else {
       const relyingParty = new openid.RelyingParty(req.body.return_url, req.body.realm, true, false, [])
+      const secret = process.env.JWT_SECRET
 
       relyingParty.verifyAssertion(req.body.response_url, (error, result) => {
         if (!error && result.authenticated) {
           // extract steamId
           const playerId = result.claimedIdentifier.slice(-17)
+          const token = jwt.encode({ sub: playerId, iat: new Date().getTime() }, secret)
           new Player({
             id: playerId,
             platform: 0,
           }).fetch({ require: true })
-            .then((player) => {
-              player.save({
-                token_created_at: new Date(Date.now()),
-                token: randToken.generate(16),
-              }).then(() => res.jsend.success({ player: player.toJSON() }))
+            // player already exists
+            .then(() => {
+              res.jsend.success({ token })
             })
+            // new player
             .catch(Player.NotFoundError, () => {
               new Player({
                 id: playerId,
                 platform: 0,
               })
-              .save({
-                token_created_at: new Date(Date.now()),
-                token: randToken.generate(16),
-              }, { method: 'insert' }).then((player) => res.jsend.success({ player: player.toJSON() }))
+                .save({ method: 'insert' })
+                .then(() => res.jsend.success({ playerId, token }))
             })
             .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
         } else {
