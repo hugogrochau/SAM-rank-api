@@ -1,6 +1,7 @@
 import { Router } from 'express'
 
 import team from '../controllers/team'
+import { requireToken } from '../services/passport'
 
 /**
  * @apiDefine PlayerNotFound
@@ -181,7 +182,7 @@ api.get('/:id', (req, res) => {
  *
  * @apiUse DatabaseError
  */
-api.post('/add', (req, res) => {
+api.post('/add', requireToken, (req, res) => {
   req.checkBody('name', 'Invalid Team name').isLength({ min: 2, max: 30 })
 
   req.getValidationResult().then((result) => {
@@ -214,7 +215,7 @@ api.post('/add', (req, res) => {
  *
  * @apiUse DatabaseError
  */
-api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
+api.get('/:id/add-player/:playerPlatform/:playerId', requireToken, (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
   req.checkParams('playerPlatform', 'Invalid platform').isValidPlatform()
   req.checkParams('playerId', 'Invalid id').isValidIdForPlatform(req.params.playerPlatform)
@@ -249,7 +250,7 @@ api.get('/:id/add-player/:playerPlatform/:playerId', (req, res) => {
  *
  * @apiUse DatabaseError
  */
-api.get('/:id/remove-player/:playerPlatform/:playerId', (req, res) => {
+api.get('/:id/remove-player/:playerPlatform/:playerId', requireToken, (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
   req.checkParams('playerPlatform', 'Invalid platform').isValidPlatform()
   req.checkParams('playerId', 'Invalid id').isValidIdForPlatform(req.params.playerPlatform)
@@ -288,7 +289,7 @@ api.get('/:id/remove-player/:playerPlatform/:playerId', (req, res) => {
  *
  * @apiUse TeamNotFound
  */
-api.get('/:id/remove', (req, res) => {
+api.get('/:id/remove', requireToken, (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
 
   req.getValidationResult().then((result) => {
