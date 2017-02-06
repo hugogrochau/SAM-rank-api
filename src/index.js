@@ -7,7 +7,7 @@ import jsend from 'jsend'
 import morgan from 'morgan'
 import validators from './util/validators'
 import api from './api'
-import setStatusMiddleware from './middleware/set-status-middleware'
+import setStatusMiddleware from './middleware/set-status'
 
 const app = express()
 app.server = http.createServer(app)
