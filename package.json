@@ -4,7 +4,7 @@
   "description": "Rocket League South America API",
   "main": "dist",
   "scripts": {
-    "dev": "source ./.env; nodemon -w src --exec \"babel-node src\"",
+    "watch": "source ./.env; nodemon -w src --exec \"babel-node src\"",
     "build": "babel src -s -D -d dist --ignore node_modules",
     "start": "source ./.env; node dist",
     "prestart": "npm run -s build",
