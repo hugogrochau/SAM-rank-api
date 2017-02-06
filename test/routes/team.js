@@ -17,6 +17,10 @@ export default ({ app, chai }) => {
       .post('/api/v1/player/add')
       .send({ id, platform })
 
+  const getPlayer = (id, platform = '0') =>
+    chai.request(app)
+      .get(`/api/v1/player/${platform}/${id}`)
+
   const addPlayerToTeam = (id, pid) =>
     chai.request(app)
       .get(`/api/v1/team/${id}/add-player/0/${pid}`)
@@ -88,8 +92,8 @@ export default ({ app, chai }) => {
       )
     })
 
-    describe('/:id/delete', () => {
-      it('Should delete a team and players', () =>
+    describe('/:id/remove', () => {
+      it('Should remove a team and players', () =>
         Promise.all([
           addPlayer(testSteamId2),
           addPlayerToTeam(teamId, testSteamId2),
@@ -100,20 +104,24 @@ export default ({ app, chai }) => {
             res.filter((x) => x.status !== 200).should.be.empty
 
             return chai.request(app)
-              .get(`/api/v1/team/${teamId}/delete`)
+              .get(`/api/v1/team/${teamId}/remove`)
               .should.eventually.have.property('status', 200)
           })
       )
 
-      it('Should have deleted the team', () =>
+      it('Should have removed the team', () =>
         chai.request(app)
           .get(`/api/v1/team/${teamId}`)
           .should.be.rejectedWith('Not Found')
       )
+      it('Should have removed the team from the players', () => {
+        getPlayer(testSteamId).should.eventually.have.deep.property('body.data.player.team_id', null)
+        getPlayer(testSteamId2).should.eventually.have.deep.property('body.data.player.team_id', null)
+      })
 
-      it('Should not delete a team that does not exist', () =>
+      it('Should not remove a team that does not exist', () =>
         chai.request(app)
-          .get('/api/v1/team/9999999/delete')
+          .get('/api/v1/team/9999999/remove')
           .should.be.rejectedWith('Not Found')
       )
     })
