@@ -4,8 +4,8 @@ import expressValidator from 'express-validator'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import jsend from 'jsend'
+import morgan from 'morgan'
 import validators from './util/validators'
-
 import api from './api'
 
 const app = express()
@@ -30,6 +30,7 @@ app.use(expressValidator({
 
 app.use(jsend.middleware)
 
+
 // internal middleware
 // app.use(middleware)
 
@@ -38,6 +39,7 @@ app.use('/api/v1', api)
 
 // no need to start a server when testing
 if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('combined'))
   app.server.listen(process.env.PORT || 8080)
   /* eslint-disable no-console */
   console.log(`Started on port ${app.server.address().port}`)
