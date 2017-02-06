@@ -1,6 +1,8 @@
 import { Router } from 'express'
 
 import player from '../controllers/player'
+import { requireToken } from '../services/passport'
+import isInternalService from '../middleware/is-internal-service'
 
 /**
  * @apiDefine PlayerNotFound
@@ -171,7 +173,7 @@ api.get('/:platform/:id/', (req, res) => {
  *
  * @apiUse InputError
  */
-api.post('/add', (req, res) => {
+api.post('/add', isInternalService, (req, res) => {
   req.checkBody('platform', 'Invalid platform').isValidPlatform()
   req.checkBody('id', 'Invalid id').isValidIdForPlatform(req.body.platform)
 
@@ -207,11 +209,7 @@ api.post('/add', (req, res) => {
  *
  * @apiUse DatabaseError
  */
-api.post('/:platform/:id/update', (req, res) => {
-  if (req.ip.slice(-9) !== '127.0.0.1') {
-    return res.status(403).jsend.error('Unauthorized')
-  }
-
+api.post('/:platform/:id/update', isInternalService, (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
   req.checkBody('name').optional().isValidName()
@@ -255,7 +253,7 @@ api.post('/:platform/:id/update', (req, res) => {
  *
  * @apiUse PlayerNotFound
  */
-api.get('/:platform/:id/remove', (req, res) => {
+api.get('/:platform/:id/remove', requireToken, (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
