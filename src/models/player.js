@@ -1,4 +1,4 @@
-import bs from '../db'
+import bs from '../services/bookshelf'
 import Team from './team'
 import PlayerUpdate from './player-update'
 
@@ -21,7 +21,7 @@ class Player extends bs.Model {
   }
 
   static getPlatformIdFromString(platformString) {
-    switch (platformString.toLowerCase()) {
+    switch (String(platformString).toLowerCase()) {
       case '0':
       case 'steam': return 0
       case '1':

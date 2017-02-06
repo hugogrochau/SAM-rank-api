@@ -1,4 +1,4 @@
-import bs from '../db'
+import bs from '../services/bookshelf'
 import Player from './player'
 
 class Team extends bs.Model {

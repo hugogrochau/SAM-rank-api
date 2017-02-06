@@ -5,6 +5,9 @@
     "es6": true,
     "mocha": true
   },
+  "globals": {
+    "expect": true
+  },
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module"
