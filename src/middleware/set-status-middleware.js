@@ -2,7 +2,7 @@ import mung from 'express-mung'
 
 const errorCodeMap = {
   InputError: 400,
-  Unauthorized: 403,
+  Unauthorized: 401,
   PlayerNotFound: 404,
   TeamNotFound: 404,
   DuplicatePlayer: 409,

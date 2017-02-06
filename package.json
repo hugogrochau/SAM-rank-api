@@ -8,7 +8,7 @@
     "build": "babel src -s -D -d dist --ignore node_modules",
     "start": "node -r dotenv/config dist",
     "prestart": "npm run -s build",
-    "test": "NODE_ENV=test mocha --compilers js:babel-register --reporter spec",
+    "test": "NODE_ENV=test JWT_SECRET=sadlkjfs mocha --compilers js:babel-register --reporter spec",
     "docs": "apidoc -i src/api -o docs/",
     "migrate": "knex migrate:latest --env development",
     "lint": "eslint src test",
@@ -58,6 +58,8 @@
     "lodash": "^4.17.4",
     "morgan": "^1.8.0",
     "openid": "^2.0.6",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
     "pg": "^6.1.2",
     "resource-router-middleware": "^0.6.0",
     "validator": "^6.2.1"
