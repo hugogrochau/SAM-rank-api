@@ -1,7 +1,5 @@
 import { Router } from 'express'
-import openid from 'openid'
-import jwt from 'jwt-simple'
-import Player from '../models/player'
+import auth from '../controllers/auth'
 
 /**
  * @apiDefine InputError
@@ -53,11 +51,11 @@ import Player from '../models/player'
 const api = Router()
 
 /**
- * @api {post} /auth/ Authorize with the steam OpenID 2 service
- * @apiName Authorize
+ * @api {post} /auth/authenticate Authenticate with the steam OpenID 2 service
+ * @apiName Authenticate
  * @apiGroup Auth
  *
- * @apiParam {String} return_url URL to return to after authorizing with steam
+ * @apiParam {String} return_url URL to return to after authenticating with steam
  * @apiParam {String} realm OpenID realm
  *
  * @apiSuccess {Object} data URL to redirect to for steam OpenID
@@ -77,7 +75,7 @@ const api = Router()
  *
  */
 // TODO move to controller
-api.post('/', (req, res) => {
+api.post('/authenticate', (req, res) => {
   req.checkBody('return_url').isURL()
   req.checkBody('realm').isURL()
 
@@ -85,18 +83,9 @@ api.post('/', (req, res) => {
     if (!result.isEmpty()) {
       res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
     } else {
-      const relyingParty = new openid.RelyingParty(req.body.return_url, req.body.realm, true, false, [])
-
-      // Resolve identifier, associate, and build authentication URL
-      relyingParty.authenticate('https://steamcommunity.com/openid', false, (error, authUrl) => {
-        if (error) {
-          res.jsend.error(`Authentication failed: ${error.message}`)
-        } else if (!authUrl) {
-          res.jsend.error('Authentication failed')
-        } else {
-          res.jsend.success(authUrl)
-        }
-      })
+      auth.authenticate(req.body.return_url, req.body.realm)
+        .then((authUrl) => res.jsend.success(authUrl))
+        .catch((err) => res.status(403).jsend.error(err))
     }
   })
 })
@@ -106,28 +95,20 @@ api.post('/', (req, res) => {
  * @apiName Verify
  * @apiGroup Auth
  *
- * @apiParam {String} return_url URL to return to after authorizing with steam
+ * @apiParam {String} return_url URL to return to after authenticating with steam
  * @apiParam {String} realm OpenID realm
  * @apiParam {String} response_url url returned from Steam
  *
- * @apiSuccess {Object} data URL to redirect to for steam OpenID
- *
- * @apiSuccess {Object} player Player data
+ * @apiSuccess {String} token The JWT
+ * @apiSuccess {String} playerId the player Id
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *      "status": "success",
- *         "data": {
- *           "player": {
- *             "id": "76561198013819031",
- *             "platform": 0,
- *             "token_created_at": "2017-02-05T01:56:08.451Z",
- *             "token": "pcs4GE8SzH64dib8",
- *             "last_update": "2017-02-05T01:56:08.454Z",
- *             "created_at": "2017-02-05T01:56:08.454Z",
- *             "sum": null
- *         }
+ *      "data": {
+ *        "token": "sdifjasfsaf2skgsjg",
+ *        "playerId": "71837465768574657"
  *       }
  *     }
  *
@@ -146,39 +127,13 @@ api.post('/verify', (req, res) => {
   req.getValidationResult().then((validationResult) => {
     if (!validationResult.isEmpty()) {
       res.status(400).jsend.error({ message: 'InputError', data: validationResult.mapped() })
-      // Verify identity assertion
-      // NOTE: Passing just the URL is also possible
     } else {
-      const relyingParty = new openid.RelyingParty(req.body.return_url, req.body.realm, true, false, [])
-      const secret = process.env.JWT_SECRET
-
-      relyingParty.verifyAssertion(req.body.response_url, (error, result) => {
-        if (!error && result.authenticated) {
-          // extract steamId
-          const playerId = result.claimedIdentifier.slice(-17)
-          const token = jwt.encode({ sub: playerId, iat: new Date().getTime() }, secret)
-          new Player({
-            id: playerId,
-            platform: 0,
-          }).fetch({ require: true })
-            // player already exists
-            .then(() => {
-              res.jsend.success({ token })
-            })
-            // new player
-            .catch(Player.NotFoundError, () => {
-              new Player({
-                id: playerId,
-                platform: 0,
-              })
-                .save({ method: 'insert' })
-                .then(() => res.jsend.success({ playerId, token }))
-            })
-            .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
-        } else {
-          res.status(403).jsend.error('Unauthorized')
-        }
-      })
+      auth.verify(req.body.return_url, req.body.realm, req.body.response_url)
+        .then((token) => res.jsend.success(token))
+        .catch((err) => {
+          const errCode = err.message === 'DatabaseError' ? 500 : 403
+          return res.status(errCode).jsend.error(err)
+        })
     }
   })
 })
