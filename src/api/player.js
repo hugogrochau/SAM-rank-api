@@ -1,7 +1,6 @@
 import { Router } from 'express'
 
-import Player from '../models/player'
-import PlayerUpdate from '../models/player-update'
+import player from '../controllers/player'
 
 /**
  * @apiDefine PlayerNotFound
@@ -112,12 +111,11 @@ const api = Router()
  *
  * @apiUse DatabaseError
  */
-api.get('/', (req, res) => {
-  new Player()
-    .fetchAll()
-    .then((players) => res.jsend.success({ players: players.toJSON() }))
-    .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
-})
+api.get('/', (req, res) =>
+  player.getPlayers()
+    .then((players) => res.jsend.success(players))
+    .catch((err) => res.jsend.error(err))
+)
 
 /**
  * @api {get} /player/:platform/:id Get Player information
@@ -141,19 +139,12 @@ api.get('/:platform/:id/', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
-    const platformId = Player.getPlatformIdFromString(req.params.platform)
-
-    new Player({
-      id: req.params.id.toLowerCase(),
-      platform: platformId,
-    })
-      .fetch({ require: true })
-      .then((player) => res.jsend.success(player.toJSON()))
-      .catch(Player.NotFoundError, () => res.status(404).jsend.error('PlayerNotFound'))
-      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
+    player.getPlayer(req.params.platform, req.params.id)
+      .then((playerInfo) => res.jsend.success(playerInfo))
+      .catch((err) => res.jsend.error(err))
   })
 })
 
@@ -186,25 +177,12 @@ api.post('/add', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
-    const platformId = Player.getPlatformIdFromString(req.body.platform)
-
-    const attributes = {
-      id: req.body.id,
-      platform: platformId,
-    }
-
-    new Player()
-      .save(attributes, { method: 'insert' })
-      .then((player) => res.jsend.success({ player: player.toJSON() }))
-      .catch((err) => {
-        if (err.code === '23505' || err.errno === 19) {
-          return res.status(409).jsend.error('DuplicatePlayer')
-        }
-        return res.status(500).jsend.error({ message: 'DatabaseError', data: err })
-      })
+    player.addPlayer(req.body.platform, req.body.id)
+      .then((playerInfo) => res.jsend.success(playerInfo))
+      .catch((err) => res.jsend.error(err))
   })
 })
 
@@ -230,9 +208,6 @@ api.post('/add', (req, res) => {
  * @apiUse DatabaseError
  */
 api.post('/:platform/:id/update', (req, res) => {
-  const columns = Player.updatableColumns
-  let updates = {}
-
   if (req.ip.slice(-9) !== '127.0.0.1') {
     return res.status(403).jsend.error('Unauthorized')
   }
@@ -240,46 +215,25 @@ api.post('/:platform/:id/update', (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
   req.checkBody('name').optional().isValidName()
-  columns.slice(1).forEach((column) => {
-    req.checkBody(column).optional().isInt()
+  Object.keys(req.body).forEach((column) => {
+    if (column !== 'name') {
+      req.checkBody(column).optional().isInt()
+    }
   })
 
   req.getValidationResult().then((result) => {
-    if (result.isEmpty()) {
-      const platformId = Player.getPlatformIdFromString(req.params.platform)
-      return new Player({ id: req.params.id, platform: platformId }).fetch()
+    if (!result.isEmpty()) {
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
-    res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+    player.updatePlayer(req.params.platform, req.params.id, req.body)
+      .then((updateInfo) => res.jsend.success(updateInfo))
+      .catch((err) => res.jsend.error(err))
   })
-  .then((player) => {
-    // Filter only updates that change existing values ~ magic ~
-    updates = Object.keys(req.body).reduce((acc, k) =>
-      columns.includes(k) && String(player.get(k)).toLowerCase() !== String(req.body[k]).toLowerCase() ?
-        { ...acc, [k]: req.body[k] } : { ...acc }
-    , {})
-
-    return player
-      .set(updates)
-      .save()
-  })
-  .then((player) => {
-    const updated = Object.keys(updates).length > 0
-    if (updated) {
-      new PlayerUpdate({ player_id: player.get('id'), player_platform: player.get('platform') })
-        .set(updates)
-        .save()
-        .then(() => res.jsend.success({ player: player.toJSON(), updated }))
-    } else {
-      res.jsend.success({ player: player.toJSON(), updated })
-    }
-  })
-  .catch(Player.NotFoundError, () => res.status(404).jsend.error('PlayerNotFound'))
-  .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
 })
 
 /**
- * @api {get} /player/:platform/:id/delete Delete Player
- * @apiName DeletePlayer
+ * @api {get} /player/:platform/:id/remove Remove Player
+ * @apiName RemovePlayer
  * @apiGroup Player
  *
  * @apiParam {String="0","1","2","steam","ps4","xbox"} platform Player's platform
@@ -291,7 +245,7 @@ api.post('/:platform/:id/update', (req, res) => {
  *     HTTP/1.1 200 OK
  *     {
  *       "status": "success",
- *       "data": "PlayerDeleted"
+ *       "data": "PlayerRemoved"
  *     }
  *
  *
@@ -301,25 +255,17 @@ api.post('/:platform/:id/update', (req, res) => {
  *
  * @apiUse PlayerNotFound
  */
-api.get('/:platform/:id/delete', (req, res) => {
+api.get('/:platform/:id/remove', (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
-
-    const platformId = Player.getPlatformIdFromString(req.params.platform)
-
-    new Player({
-      id: req.params.id,
-      platformId,
-    })
-      .destroy({ require: true })
-      .then(() => res.jsend.success('PlayerDeleted'))
-      .catch(Player.NoRowsDeletedError, () => res.status(404).jsend.error('PlayerNotFound'))
-      .catch((err) => res.status(500).jsend.error({ message: 'DatabaseError', data: err }))
+    player.removePlayer(req.params.platform, req.params.id)
+      .then((removeResponse) => res.jsend.success(removeResponse))
+      .catch((err) => res.jsend.error(err))
   })
 })
 

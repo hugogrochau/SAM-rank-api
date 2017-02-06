@@ -13,9 +13,9 @@ export default ({ app, chai }) => {
       .send(data)
 
 
-  const deletePlayer = (id, platform = '0') =>
+  const removePlayer = (id, platform = '0') =>
     chai.request(app)
-      .get(`/api/v1/player/${platform}/${id}/delete`)
+      .get(`/api/v1/player/${platform}/${id}/remove`)
 
   const getPlayer = (id, platform = '0') =>
     chai.request(app)
@@ -46,7 +46,7 @@ export default ({ app, chai }) => {
         getPlayer(testSteamId)
           .then((res) => {
             res.should.have.status(200)
-            res.body.data.id.should.equal(testSteamId)
+            res.body.data.player.id.should.equal(testSteamId)
           })
       )
 
@@ -75,20 +75,20 @@ export default ({ app, chai }) => {
       )
     })
 
-    describe('/:platform/:id/delete', () => {
-      it('Should delete a player', () =>
-        deletePlayer(testSteamId)
+    describe('/:platform/:id/remove', () => {
+      it('Should remove a player', () =>
+        removePlayer(testSteamId)
           .should.eventually.have.property('status', 200)
       )
 
-      it('Should have deleted the player', () =>
+      it('Should have removed the player', () =>
         chai.request(app)
           .get(`/api/v1/player/0/${testSteamId}`)
           .should.be.rejectedWith('Not Found')
       )
 
-      it('Should not delete a player that does not exist', () =>
-        deletePlayer(testSteamId)
+      it('Should not remove a player that does not exist', () =>
+        removePlayer(testSteamId)
           .should.be.rejectedWith('Not Found')
       )
     })
