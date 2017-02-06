@@ -2,9 +2,10 @@ define({ "api": [
   {
     "type": "post",
     "url": "/auth/authenticate",
-    "title": "Authenticate with the steam OpenID 2 service",
+    "title": "Authenticate",
     "name": "Authenticate",
     "group": "Auth",
+    "description": "<p>Authenticate with the steam OpenID 2 service</p>",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -93,9 +94,10 @@ define({ "api": [
   {
     "type": "post",
     "url": "/auth/verify/",
-    "title": "Verify if the login is valid with the steam OpenID 2 service",
+    "title": "Verify",
     "name": "Verify",
     "group": "Auth",
+    "description": "<p>Verify if the login is valid with the steam OpenID 2 service</p>",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -535,6 +537,97 @@ define({ "api": [
     }
   },
   {
+    "type": "get",
+    "url": "/player/remove",
+    "title": "Remove registered Player",
+    "name": "RemoveRegisteredPlayer",
+    "group": "Player",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"success\",\n  \"data\": \"PlayerRemoved\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/api/player.js",
+    "groupTitle": "Player",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth_token",
+            "description": "<p>The authentication token</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"auth_token\": \"ljndfkdf982kdsalf89k\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "DatabaseError",
+            "description": "<p>Error with the application database</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "InputError",
+            "description": "<p>Input is invalid</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "PlayerNotFound",
+            "description": "<p>Player does not exist</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "DatabaseError Error-Response:",
+          "content": "HTTP/1.1 500 Internal Server Error\n{\n  \"status\": \"error\",\n  \"message\": \"Database error\",\n  \"code\": \"Database\",\n  \"data\": \"DATABASE ERROR DATA\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "InputError Error-Response:",
+          "content": "HTTP/1.1 400 Bad Request\n{\n  \"status\": \"error\",\n  \"message\": \"InputError\",\n  \"data\": {\n    \"playerId\": {\n      \"param\": \"playerId\",\n      \"msg\": \"Invalid Steam 64 ID\",\n      \"value\": \"banana\"\n    }\n  }\n}",
+          "type": "json"
+        },
+        {
+          "title": "PlayerNotFound Error-Response:",
+          "content": "HTTP/1.1 404 Not Found\n{\n  \"status\": \"error\",\n  \"message\": \"PlayerNotFound\",\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "post",
     "url": "/player/:platform/:id/update",
     "title": "Update Player information",
@@ -704,6 +797,26 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "src/api/team.js",
     "groupTitle": "Team",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth_token",
+            "description": "<p>The authentication token</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"auth_token\": \"ljndfkdf982kdsalf89k\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "success": {
       "fields": {
         "Success 200": [
@@ -743,7 +856,7 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "TeamNotFound",
-            "description": "<p>Team doesn't exist</p>"
+            "description": "<p>Team does not exist</p>"
           },
           {
             "group": "Error 4xx",
@@ -799,6 +912,26 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "src/api/team.js",
     "groupTitle": "Team",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth_token",
+            "description": "<p>The authentication token</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"auth_token\": \"ljndfkdf982kdsalf89k\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "success": {
       "fields": {
         "Success 200": [
@@ -905,7 +1038,7 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "TeamNotFound",
-            "description": "<p>Team doesn't exist</p>"
+            "description": "<p>Team does not exist</p>"
           },
           {
             "group": "Error 4xx",
@@ -1020,6 +1153,26 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "src/api/team.js",
     "groupTitle": "Team",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth_token",
+            "description": "<p>The authentication token</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"auth_token\": \"ljndfkdf982kdsalf89k\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "success": {
       "fields": {
         "Success 200": [
@@ -1059,7 +1212,7 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "TeamNotFound",
-            "description": "<p>Team doesn't exist</p>"
+            "description": "<p>Team does not exist</p>"
           },
           {
             "group": "Error 4xx",
@@ -1096,7 +1249,7 @@ define({ "api": [
   {
     "type": "get",
     "url": "/team/:id/remove",
-    "title": "Remove team",
+    "title": "Remove Team",
     "name": "RemoveTeam",
     "group": "Team",
     "parameter": {
@@ -1135,6 +1288,26 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "src/api/team.js",
     "groupTitle": "Team",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth_token",
+            "description": "<p>The authentication token</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Header-Example:",
+          "content": "{\n  \"auth_token\": \"ljndfkdf982kdsalf89k\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "error": {
       "fields": {
         "Error 4xx": [
@@ -1154,7 +1327,7 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "TeamNotFound",
-            "description": "<p>Team doesn't exist</p>"
+            "description": "<p>Team does not exist</p>"
           }
         ]
       },

@@ -19,7 +19,7 @@ import { requireToken } from '../services/passport'
 /**
  * @apiDefine TeamNotFound
  *
- * @apiError TeamNotFound Team doesn't exist
+ * @apiError TeamNotFound Team does not exist
  *
  * @apiErrorExample TeamNotFound Error-Response:
  *     HTTP/1.1 404 Not Found
@@ -61,6 +61,17 @@ import { requireToken } from '../services/passport'
  *       "message": "Database error",
  *       "code": "Database",
  *       "data": "DATABASE ERROR DATA"
+ *     }
+ */
+
+/**
+ * @apiDefine AuthHeader
+ *
+ * @apiHeader {String} auth_token The authentication token
+ *
+ * @apiHeaderExample {json} Header-Example:
+ *     {
+ *       "auth_token": "ljndfkdf982kdsalf89k"
  *     }
  */
 
@@ -176,6 +187,8 @@ api.get('/:id', (req, res) => {
  *
  * @apiParam {String} name Team name
  *
+ * @apiUse AuthHeader
+ *
  * @apiUse TeamSuccess
  *
  * @apiUse InputError
@@ -204,6 +217,8 @@ api.post('/add', requireToken, (req, res) => {
  * @apiParam {Number} id Team's unique id
  * @apiParam {String="0","1","2","steam","ps4","xbox"} playerPlatform Player's platform
  * @apiParam {String} playerId Player's unique id.
+ *
+ * @apiUse AuthHeader
  *
  * @apiUse PlayerSuccess
  *
@@ -240,6 +255,8 @@ api.get('/:id/add-player/:playerPlatform/:playerId', requireToken, (req, res) =>
  * @apiParam {String="0","1","2","steam","ps4","xbox"} playerPlatform Player's platform
  * @apiParam {String} playerId Player's unique id.
  *
+ * @apiUse AuthHeader
+ *
  * @apiUse PlayerSuccess
  *
  * @apiUse InputError
@@ -267,11 +284,13 @@ api.get('/:id/remove-player/:playerPlatform/:playerId', requireToken, (req, res)
 })
 
 /**
- * @api {get} /team/:id/remove Remove team
+ * @api {get} /team/:id/remove Remove Team
  * @apiName RemoveTeam
  * @apiGroup Team
  *
  * @apiParam {Number} id Team's unique id.
+ *
+ * @apiUse AuthHeader
  *
  * @apiSuccess {Object} success Success message
  *
@@ -281,7 +300,6 @@ api.get('/:id/remove-player/:playerPlatform/:playerId', requireToken, (req, res)
  *       "status": "success",
  *       "data": "TeamRemoved"
  *     }
- *
  *
  * @apiUse DatabaseError
  *

@@ -65,6 +65,17 @@ import isInternalService from '../middleware/is-internal-service'
  */
 
 /**
+ * @apiDefine AuthHeader
+ *
+ * @apiHeader {String} auth_token The authentication token
+ *
+ * @apiHeaderExample {json} Header-Example:
+ *     {
+ *       "auth_token": "ljndfkdf982kdsalf89k"
+ *     }
+*/
+
+/**
  * @apiDefine PlayerSuccess
  *
  * @apiSuccess {Object} player Player data
@@ -253,7 +264,7 @@ api.post('/:platform/:id/update', isInternalService, (req, res) => {
  *
  * @apiUse PlayerNotFound
  */
-api.get('/:platform/:id/remove', requireToken, (req, res) => {
+api.get('/:platform/:id/remove', isInternalService, (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
@@ -266,5 +277,33 @@ api.get('/:platform/:id/remove', requireToken, (req, res) => {
       .catch((err) => res.jsend.error(err))
   })
 })
+
+/**
+ * @api {get} /player/remove Remove registered Player
+ * @apiName RemoveRegisteredPlayer
+ * @apiGroup Player
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiSuccess {Object} success Success message
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": "success",
+ *       "data": "PlayerRemoved"
+ *     }
+ *
+ * @apiUse DatabaseError
+ *
+ * @apiUse InputError
+ *
+ * @apiUse PlayerNotFound
+ */
+api.get('/remove', requireToken, (req, res) =>
+    player.removePlayer(0, req.user.id)
+      .then((removeResponse) => res.jsend.success(removeResponse))
+      .catch((err) => res.jsend.error(err))
+)
 
 export default api
