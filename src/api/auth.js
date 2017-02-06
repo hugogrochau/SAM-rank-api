@@ -81,7 +81,7 @@ api.post('/authenticate', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      res.jsend.error({ message: 'InputError', data: result.mapped() })
     } else {
       auth.authenticate(req.body.return_url, req.body.realm)
         .then((authUrl) => res.jsend.success(authUrl))
@@ -126,14 +126,11 @@ api.post('/verify', (req, res) => {
 
   req.getValidationResult().then((validationResult) => {
     if (!validationResult.isEmpty()) {
-      res.status(400).jsend.error({ message: 'InputError', data: validationResult.mapped() })
+      res.jsend.error({ message: 'InputError', data: validationResult.mapped() })
     } else {
       auth.verify(req.body.return_url, req.body.realm, req.body.response_url)
         .then((token) => res.jsend.success(token))
-        .catch((err) => {
-          const errCode = err.message === 'DatabaseError' ? 500 : 403
-          return res.status(errCode).jsend.error(err)
-        })
+        .catch((err) => res.jsend.error(err))
     }
   })
 })

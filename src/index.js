@@ -7,6 +7,7 @@ import jsend from 'jsend'
 import morgan from 'morgan'
 import validators from './util/validators'
 import api from './api'
+import setStatusMiddleware from './middleware/set-status-middleware'
 
 const app = express()
 app.server = http.createServer(app)
@@ -30,12 +31,11 @@ app.use(expressValidator({
 
 app.use(jsend.middleware)
 
-
-// internal middleware
-// app.use(middleware)
+app.use(setStatusMiddleware)
 
 // api router
 app.use('/api/v1', api)
+
 
 // no need to start a server when testing
 if (process.env.NODE_ENV !== 'test') {
