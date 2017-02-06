@@ -20,5 +20,4 @@ export const requireToken = passport.authenticate('jwt', { session: false })
 
 passport.use(jwtLogin)
 
-
 export default passport
