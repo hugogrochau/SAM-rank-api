@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import team from '../controllers/team'
-import { requireToken } from '../services/passport'
+import isInternalService from '../middleware/is-internal-service'
 
 /**
  * @apiDefine PlayerNotFound
@@ -171,7 +171,7 @@ api.get('/:id', (req, res) => {
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     team.getTeam(req.params.id)
@@ -195,12 +195,12 @@ api.get('/:id', (req, res) => {
  *
  * @apiUse DatabaseError
  */
-api.post('/add', requireToken, (req, res) => {
+api.post('/add', isInternalService, (req, res) => {
   req.checkBody('name', 'Invalid Team name').isLength({ min: 2, max: 30 })
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     team.addTeam(req.body.name)
@@ -230,14 +230,14 @@ api.post('/add', requireToken, (req, res) => {
  *
  * @apiUse DatabaseError
  */
-api.get('/:id/add-player/:playerPlatform/:playerId', requireToken, (req, res) => {
+api.get('/:id/add-player/:playerPlatform/:playerId', isInternalService, (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
   req.checkParams('playerPlatform', 'Invalid platform').isValidPlatform()
   req.checkParams('playerId', 'Invalid id').isValidIdForPlatform(req.params.playerPlatform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     team.addPlayerToTeam(req.params.id, req.params.playerPlatform, req.params.playerId)
@@ -267,14 +267,14 @@ api.get('/:id/add-player/:playerPlatform/:playerId', requireToken, (req, res) =>
  *
  * @apiUse DatabaseError
  */
-api.get('/:id/remove-player/:playerPlatform/:playerId', requireToken, (req, res) => {
+api.get('/:id/remove-player/:playerPlatform/:playerId', isInternalService, (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
   req.checkParams('playerPlatform', 'Invalid platform').isValidPlatform()
   req.checkParams('playerId', 'Invalid id').isValidIdForPlatform(req.params.playerPlatform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     team.removePlayerFromTeam(req.params.id, req.params.playerPlatform, req.params.playerId)
@@ -307,12 +307,12 @@ api.get('/:id/remove-player/:playerPlatform/:playerId', requireToken, (req, res)
  *
  * @apiUse TeamNotFound
  */
-api.get('/:id/remove', requireToken, (req, res) => {
+api.get('/:id/remove', isInternalService, (req, res) => {
   req.checkParams('id', 'Invalid Team id').isInt({ min: 1 })
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
-      return res.status(400).jsend.error({ message: 'InputError', data: result.mapped() })
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
     team.removeTeam(req.params.id)
