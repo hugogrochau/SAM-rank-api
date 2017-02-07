@@ -1,8 +1,8 @@
 import { Router } from 'express'
 
 import player from '../controllers/player'
-import { requireToken } from '../services/passport'
-import isInternalService from '../middleware/is-internal-service'
+import requireToken from '../middlewares/require-token'
+import isInternalService from '../middlewares/is-internal-service'
 
 /**
  * @apiDefine PlayerNotFound
@@ -115,6 +115,8 @@ import isInternalService from '../middleware/is-internal-service'
 
 const api = Router()
 
+/* External Routes */
+
 /**
  * @api {get} /player/ Get all Players
  * @apiName GetPlayers
@@ -160,9 +162,63 @@ api.get('/:platform/:id/', (req, res) => {
       .catch((err) => res.jsend.error(err))
   })
 })
+/**
+ * @api {get} /player/me Get Player information with token
+ * @apiName Me
+ * @apiGroup Player
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiUse PlayerSuccess
+ *
+ * @apiUse Unauthorized
+ *
+ * @apiUse PlayerNotFound
+ *
+ * @apiUse InputError
+ *
+ * @apiUse DatabaseError
+ */
+api.get('/me', requireToken, (req, res) =>
+  player.getPlayer(0, req.user.id)
+    .then((playerInfo) => res.jsend.success(playerInfo))
+    .catch((err) => res.jsend.error(err))
+)
 
 /**
- * @api {post} /player/add Add Player
+ * @api {get} /player/remove Remove registered Player
+ * @apiName RemoveRegisteredPlayer
+ * @apiGroup Player
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiSuccess {Object} success Success message
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": "success",
+ *       "data": "PlayerRemoved"
+ *     }
+ *
+ * @apiUse Unauthorized
+ *
+ * @apiUse DatabaseError
+ *
+ * @apiUse InputError
+ *
+ * @apiUse PlayerNotFound
+ */
+api.delete('/remove/me', requireToken, (req, res) =>
+  player.removePlayer(0, req.user.id)
+    .then((removeResponse) => res.jsend.success(removeResponse))
+    .catch((err) => res.jsend.error(err))
+)
+
+/* Internal Routes */
+
+/**
+ * @api {post} /player/:platform/:id/add Add Player
  * @apiName AddPlayer
  * @apiGroup Player
  *
@@ -184,16 +240,16 @@ api.get('/:platform/:id/', (req, res) => {
  *
  * @apiUse InputError
  */
-api.post('/add', isInternalService, (req, res) => {
-  req.checkBody('platform', 'Invalid platform').isValidPlatform()
-  req.checkBody('id', 'Invalid id').isValidIdForPlatform(req.body.platform)
+api.post('/:platform/:id/add', isInternalService, (req, res) => {
+  req.checkParams('platform', 'Invalid platform').isValidPlatform()
+  req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
       return res.jsend.error({ message: 'InputError', data: result.mapped() })
     }
 
-    player.addPlayer(req.body.platform, req.body.id)
+    player.addPlayer(req.params.platform, req.params.id)
       .then((playerInfo) => res.jsend.success(playerInfo))
       .catch((err) => res.jsend.error(err))
   })
@@ -264,7 +320,7 @@ api.post('/:platform/:id/update', isInternalService, (req, res) => {
  *
  * @apiUse PlayerNotFound
  */
-api.get('/:platform/:id/remove', isInternalService, (req, res) => {
+api.delete('/:platform/:id/remove', isInternalService, (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
@@ -277,33 +333,5 @@ api.get('/:platform/:id/remove', isInternalService, (req, res) => {
       .catch((err) => res.jsend.error(err))
   })
 })
-
-/**
- * @api {get} /player/remove Remove registered Player
- * @apiName RemoveRegisteredPlayer
- * @apiGroup Player
- *
- * @apiUse AuthHeader
- *
- * @apiSuccess {Object} success Success message
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "status": "success",
- *       "data": "PlayerRemoved"
- *     }
- *
- * @apiUse DatabaseError
- *
- * @apiUse InputError
- *
- * @apiUse PlayerNotFound
- */
-api.get('/remove', requireToken, (req, res) =>
-    player.removePlayer(0, req.user.id)
-      .then((removeResponse) => res.jsend.success(removeResponse))
-      .catch((err) => res.jsend.error(err))
-)
 
 export default api
