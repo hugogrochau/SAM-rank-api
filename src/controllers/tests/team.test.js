@@ -3,15 +3,10 @@ import team from '../team'
 import player from '../player'
 
 const testTeamName = 'Black Dragons'
-const testSteamId = '76561198048735069'
-const testSteamId2 = '76561198336554280'
+const testSteamId = '76561198336554280'
 let teamId
 
 describe('Team Controller', () => {
-  before(() =>
-    bs.knex.raw('TRUNCATE TABLE team, player CASCADE')
-  )
-
   after(() =>
     bs.knex.raw('TRUNCATE TABLE team, player CASCADE')
   )
@@ -64,11 +59,11 @@ describe('Team Controller', () => {
 
   describe('removeTeam', () => {
     before(() =>
-      player.addPlayer(0, testSteamId2)
+      player.addPlayer(0, testSteamId - 1)
         .then(() =>
           Promise.all([
             team.addPlayerToTeam(teamId, 0, testSteamId),
-            team.addPlayerToTeam(teamId, 0, testSteamId2),
+            team.addPlayerToTeam(teamId, 0, testSteamId - 1),
           ])
         )
     )
