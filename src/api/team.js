@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import team from '../controllers/team'
-import isInternalService from '../middleware/is-internal-service'
+import isInternalService from '../middlewares/is-internal-service'
 
 /**
  * @apiDefine PlayerNotFound

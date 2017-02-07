@@ -16,8 +16,6 @@ const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
     .catch((err) => done(err, false))
 })
 
-export const requireToken = passport.authenticate('jwt', { session: false })
-
 passport.use(jwtLogin)
 
 export default passport
