@@ -20,8 +20,8 @@ exports.up = function(knex, Promise) {
     table.integer('3v3s_games_played');
     table.integer('3v3s_tier');
     table.timestamp('created_at');
-    table.string('player_id').unsigned();
-    table.integer('player_platform').unsigned();
+    table.string('player_id');
+    table.integer('player_platform');
 
     table.foreign(['player_id', 'player_platform']).references(['player.id', 'player.platform']);
   })
