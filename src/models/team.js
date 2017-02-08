@@ -15,6 +15,10 @@ class Team extends bs.Model {
     return this.hasMany(Player)
   }
 
+  leader() {
+    return this.hasOne(Player)
+  }
+
 }
 
 export default Team

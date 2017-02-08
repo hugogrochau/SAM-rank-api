@@ -7,6 +7,10 @@ const testSteamId = '76561198336554280'
 let teamId
 
 describe('Team Controller', () => {
+  before(() =>
+    player.addPlayer(0, testSteamId)
+  )
+
   after(() =>
     bs.knex.raw('TRUNCATE TABLE team, player CASCADE')
   )
@@ -23,26 +27,34 @@ describe('Team Controller', () => {
 
   describe('getTeams', () =>
     it('Should get all teams', () =>
-      expect(team.getTeams()).to.eventually.have.deep.property('teams[0].name', testTeamName)
+      expect(team.getTeams())
+        .to.eventually.have.deep.property('teams[0].name', testTeamName)
     )
   )
 
   describe('getTeam', () =>
     it('Should get a team', () =>
-      expect(team.getTeam(teamId)).to.eventually.have.deep.property('team.name', testTeamName)
+      expect(team.getTeam(teamId))
+        .to.eventually.have.deep.property('team.name', testTeamName)
     )
   )
 
   describe('addPlayerToTeam', () => {
     it('Should add a player to the team', () =>
-      player.addPlayer(0, testSteamId)
-        .then(() =>
-          expect(team.addPlayerToTeam(teamId, 0, testSteamId))
-            .to.eventually.have.deep.property('player.id', testSteamId))
+      expect(team.addPlayerToTeam(teamId, 0, testSteamId))
+        .to.eventually.have.deep.property('player.id', testSteamId)
     )
 
     it('Should have added the team to the player', () =>
-      expect(player.getPlayer(0, testSteamId)).to.eventually.have.deep.property('player.team_id', teamId)
+      expect(player.getPlayer(0, testSteamId))
+        .to.eventually.have.deep.property('player.team_id', teamId)
+    )
+  })
+
+  describe('setTeamLeader', () => {
+    it('Should set a player as the leader', () =>
+      expect(team.setTeamLeader(teamId, 0, testSteamId))
+        .to.eventually.have.deep.property('team.leader_id', testSteamId)
     )
   })
 
@@ -53,7 +65,8 @@ describe('Team Controller', () => {
     )
 
     it('Should have removed the player from the team', () =>
-      expect(team.getTeam(teamId)).to.eventually.have.deep.property('team.players.length', 0)
+      expect(team.getTeam(teamId))
+        .to.eventually.have.deep.property('team.players.length', 0)
     )
   })
 
