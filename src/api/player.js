@@ -177,8 +177,8 @@ api.get('/:platform/:id/', (req, res) => {
   })
 })
 /**
- * @api {get} /player/me Get Player information with token
- * @apiName Me
+ * @api {get} /player/me Get my Player information
+ * @apiName GetMyPlayer
  * @apiGroup Player
  *
  * @apiUse AuthHeader
@@ -200,8 +200,8 @@ api.get('/me', requireToken, (req, res) =>
 )
 
 /**
- * @api {delete} /player/remove Remove registered Player
- * @apiName RemoveRegisteredPlayer
+ * @api {delete} /player/remove Remove my Player
+ * @apiName RemoveMyPlayer
  * @apiGroup Player
  *
  * @apiUse AuthHeader
