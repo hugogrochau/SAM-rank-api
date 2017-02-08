@@ -1,18 +1,22 @@
 import { Router } from 'express'
-import { version } from '../../package.json'
 import playerRoute from './player'
 import teamRoute from './team'
 import authRoute from './auth'
 
 const api = Router()
 
-api.use('/player', playerRoute)
-api.use('/team', teamRoute)
-api.use('/auth', authRoute)
+const v1 = Router()
 
-// perhaps expose some API metadata at the root
-api.get('/', (req, res) => {
-  res.json({ version })
+v1.use('/player', playerRoute)
+v1.use('/team', teamRoute)
+v1.use('/auth', authRoute)
+
+api.use('/v1', v1)
+api.use((req, res, next) => {
+  if (!req.route) {
+    return res.jsend.error('RouteNotFound')
+  }
+  next()
 })
 
 export default api

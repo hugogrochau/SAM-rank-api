@@ -7,7 +7,7 @@ import jsend from 'jsend'
 import morgan from 'morgan'
 import validators from './util/validators'
 import api from './api'
-import setStatusMiddleware from './middlewares/set-status'
+import setStatusMiddleware from './middlewares/format-errors'
 
 const app = express()
 app.server = http.createServer(app)
@@ -34,7 +34,7 @@ app.use(jsend.middleware)
 app.use(setStatusMiddleware)
 
 // api router
-app.use('/api/v1', api)
+app.use(api)
 
 
 // no need to start a server when testing

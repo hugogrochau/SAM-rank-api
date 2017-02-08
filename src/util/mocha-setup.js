@@ -7,7 +7,7 @@ import app from '../index'
 const port = process.env.PORT || 8081
 
 global.expect = chai.use(chaiAsPromised).expect
-global.api = apiClient(`http://127.0.0.1:${port}/api/v1`, { ignoreErrors: true })
+global.api = apiClient(`http://127.0.0.1:${port}/v1`, { ignoreErrors: true })
 
 before((done) => {
   bs.knex.migrate.rollback().then(() =>
