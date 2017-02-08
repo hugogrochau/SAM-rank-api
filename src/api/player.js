@@ -65,6 +65,19 @@ import isInternalService from '../middlewares/is-internal-service'
  */
 
 /**
+ * @apiDefine DuplicatePlayer
+ *
+ * @apiError DuplicatePlayer Player is already added
+ *
+ * @apiErrorExample DuplicatePlayer Error-Response:
+ *     HTTP/1.1 409 Conflict
+ *     {
+ *       "status": "error",
+ *       "message": "DuplicatePlayer",
+ *     }
+ */
+
+/**
  * @apiDefine AuthHeader
  *
  * @apiHeader {String} auth_token The authentication token
@@ -83,6 +96,7 @@ import isInternalService from '../middlewares/is-internal-service'
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
+ *       "status": "success",
  *       "data": {
  *         "player": {
  *           "id": "76561198013819031",
@@ -186,7 +200,7 @@ api.get('/me', requireToken, (req, res) =>
 )
 
 /**
- * @api {get} /player/remove Remove registered Player
+ * @api {delete} /player/remove Remove registered Player
  * @apiName RemoveRegisteredPlayer
  * @apiGroup Player
  *
@@ -218,7 +232,7 @@ api.delete('/remove/me', requireToken, (req, res) =>
 /* Internal Routes */
 
 /**
- * @api {post} /player/:platform/:id/add Add Player
+ * @api {post} /player/add/:platform/:id Add Player
  * @apiName AddPlayer
  * @apiGroup Player
  *
@@ -227,20 +241,13 @@ api.delete('/remove/me', requireToken, (req, res) =>
  *
  * @apiUse PlayerSuccess
  *
- * @apiError DuplicatePlayer Player is already added
- *
- * @apiErrorExample DuplicatePlayer Error-Response:
- *     HTTP/1.1 409 Conflict
- *     {
- *       "status": "error",
- *       "message": "DuplicatePlayer",
- *     }
+ * @apiUse DuplicatePlayer
  *
  * @apiUse DatabaseError
  *
  * @apiUse InputError
  */
-api.post('/:platform/:id/add', isInternalService, (req, res) => {
+api.post('/add/:platform/:id', isInternalService, (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 
@@ -256,7 +263,7 @@ api.post('/:platform/:id/add', isInternalService, (req, res) => {
 })
 
 /**
- * @api {post} /player/:platform/:id/update Update Player information
+ * @api {post} /player/update/:platform/:id Update Player information
  * @apiName UpdatePlayer
  * @apiGroup Player
  *
@@ -276,7 +283,7 @@ api.post('/:platform/:id/add', isInternalService, (req, res) => {
  *
  * @apiUse DatabaseError
  */
-api.post('/:platform/:id/update', isInternalService, (req, res) => {
+api.post('/update/:platform/:id', isInternalService, (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
   req.checkBody('name').optional().isValidName()
@@ -297,7 +304,7 @@ api.post('/:platform/:id/update', isInternalService, (req, res) => {
 })
 
 /**
- * @api {get} /player/:platform/:id/remove Remove Player
+ * @api {delete} /player/remove/:platform/:id Remove Player
  * @apiName RemovePlayer
  * @apiGroup Player
  *
@@ -320,7 +327,7 @@ api.post('/:platform/:id/update', isInternalService, (req, res) => {
  *
  * @apiUse PlayerNotFound
  */
-api.delete('/:platform/:id/remove', isInternalService, (req, res) => {
+api.delete('/remove/:platform/:id', isInternalService, (req, res) => {
   req.checkParams('platform', 'Invalid platform').isValidPlatform()
   req.checkParams('id', 'Invalid id').isValidIdForPlatform(req.params.platform)
 

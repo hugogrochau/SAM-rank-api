@@ -17,7 +17,7 @@ const getPlayer = (platform, id) =>
       platform: platformId,
       id,
     })
-      .fetch({ require: true })
+      .fetch({ require: true, withRelated: 'team' })
       .then((player) => resolve({ player: player.toJSON() }))
       .catch(Player.NotFoundError, () => reject('PlayerNotFound'))
       .catch((err) => reject({ message: 'DatabaseError', data: err }))

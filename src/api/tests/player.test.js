@@ -1,6 +1,7 @@
 import bs from '../../services/bookshelf'
 
 const testSteamId = '76561198336554280'
+const testSteamId2 = String(testSteamId - 1)
 const testSteamName = 'KappaPride'
 const testToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3NjU2MTE5ODMzNjU1NDI4MCIsImlhdCI6MTQ4NjQ5NTY2NjQzMH0.DhV-7lpgHzYN9eLXZxPsQynzJAMkRSyTDzMGAsOJkhU'
 
@@ -41,7 +42,7 @@ describe('Player Route', () => {
           .to.eventually.have.property('message', 'InputError')
       )
       it('Should return PlayerNotFound on non-existent player', () =>
-        expect(api.player.get({ platform: 0, id: testSteamId - 1 }))
+        expect(api.player.get({ platform: 0, id: testSteamId2 }))
           .to.eventually.have.property('message', 'PlayerNotFound')
       )
     })
@@ -76,14 +77,14 @@ describe('Player Route', () => {
   })
 
   describe('Internal routes', () => {
-    describe('/player/:platform/:id/add/', () =>
+    describe('/player/add/:platform/:id', () =>
       it('Should add a player', () =>
         expect(api.player.add({ platform: 0, id: testSteamId }))
           .to.eventually.have.deep.property('data.player.id', testSteamId)
       )
     )
 
-    describe('/player/:platform/:id/update', () => {
+    describe('/player/update/:platform/:id', () => {
       it('Should update a player', () =>
         expect(api.player.update({ platform: 0, id: testSteamId, body: { name: testSteamName } }))
           .to.eventually.have.deep.property('data.player.name', testSteamName)
@@ -105,14 +106,14 @@ describe('Player Route', () => {
       )
 
       it('Should not update an non-existent player', () =>
-        expect(api.player.update({ platform: 0, id: testSteamId - 1 }))
+        expect(api.player.update({ platform: 0, id: testSteamId2 }))
           .to.eventually.have.property('message', 'PlayerNotFound')
       )
     })
 
-    describe('/player/:platform/:id/remove', () => {
+    describe('/player/remove/:platform/:id', () => {
       it('Should not remove a non-existent player', () =>
-        expect(api.player.remove({ platform: 0, id: testSteamId - 1 }))
+        expect(api.player.remove({ platform: 0, id: testSteamId2 }))
           .to.eventually.have.property('message', 'PlayerNotFound')
       )
 
