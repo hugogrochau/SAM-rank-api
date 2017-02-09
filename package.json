@@ -7,7 +7,7 @@
     "watch": ". ./.env; nodemon -w src --exec \"babel-node src\"",
     "build": "babel src -s -D -d dist --ignore node_modules",
     "start": ". ./.env; node dist",
-    "prestart": "npm run -s build",
+    "prestart": "npm run build",
     "test": ". ./.env.test; mocha --opts ./mocha.opts",
     "test:watch": ". ./.env.test; mocha --watch --opts ./mocha.opts",
     "docs": "apidoc -i src/api -o docs/",
@@ -15,7 +15,7 @@
     "lint": "eslint src test",
     "lint:staged": "lint-staged",
     "all": "npm run lint && npm run test",
-    "updater": "npm run -s build && node -r dotenv/config dist/scripts/update.js"
+    "updater": ". ./.env; npm run build && node dist/scripts/update.js"
   },
   "lint-staged": {
     "*.js": "lint"

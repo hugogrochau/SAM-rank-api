@@ -55,27 +55,35 @@ const getRanksFromInformation = (stats) => {
   return ranks
 }
 
-const getPlayerInformation = (platform, id, apiKey) => {
-  const rltPlatform = 3 - platform
-  const query = querystring.stringify({
-    platform: rltPlatform,
-    name: id,
-  })
 
-  return fetch(`${API_URL}?${query}`, {
-    headers: { 'X-API-KEY': apiKey },
-  })
+const getPlayerInformation = (platform, id, apiKey) =>
+  new Promise((resolve, reject) => {
+    const rltPlatform = 3 - platform
+    const query = querystring.stringify({
+      platform: rltPlatform,
+      name: id,
+    })
+
+    return fetch(`${API_URL}?${query}`, {
+      headers: { 'X-API-KEY': apiKey },
+    })
     .then((res) => {
-      if (res.status === 200) {
-        return res.json()
+      if (res.status >= 400) {
+        return reject(res)
       }
-      throw new Error(`Error status from external api: ${res.status}`)
+      try {
+        return res.json()
+      } catch (err) {
+        return reject(res)
+      }
     })
     .then((jsonData) => {
       const info = getRanksFromInformation(jsonData.stats)
       info.name = jsonData.platformUserHandle
       info.id = jsonData.platformUserId
-      return info
+      resolve(info)
     })
-}
+    .catch((err) => reject(err))
+  })
+
 export default { getPlayerInformation }

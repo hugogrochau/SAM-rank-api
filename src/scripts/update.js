@@ -1,6 +1,7 @@
-import fetch from 'isomorphic-fetch'
+// TODO make this its own package/repo
 import queue from 'async/queue'
 import values from 'lodash/values'
+import apiClient from 'rocketleaguesam-api-client'
 
 import rlrankapi, { TRACKER } from '../lib/rocket-league-rank-api'
 
@@ -11,17 +12,17 @@ if (!process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_KEY || !process.env.RLTRACKER_
   process.exit(-1)
 }
 
-// Settings
 
+// Settings
 const PRIORITY_UNIT = 15 // minutes difference between priorities
 
 const PULL_DELAY = 60 // seconds to wait before pulling players after a full update is done
 
-const LOCAL_API = 'http://127.0.0.1:8080/api/v1'
+const API_VERSION = 'v1'
 
-const TRACKER_NAME = []
-TRACKER_NAME[TRACKER.RLTRACKER_PRO] = 'rltracker.pro'
-TRACKER_NAME[TRACKER.ROCKETLEAGUE_TRACKER_NETWORK] = 'Rocket League Tracker Network'
+const LOCAL_API = `${process.env.BASE_URL}/${API_VERSION}`
+
+const api = apiClient({ host: LOCAL_API })
 
 const RATE = []
 RATE[TRACKER.RLTRACKER_PRO] = 9.8
@@ -31,7 +32,7 @@ const lastRequest = []
 lastRequest[TRACKER.RLTRACKER_PRO] = 0
 lastRequest[TRACKER.ROCKETLEAGUE_TRACKER_NETWORK] = 0
 
-let isUp = []
+const isUp = []
 isUp[TRACKER.RLTRACKER_PRO] = true
 isUp[TRACKER.ROCKETLEAGUE_TRACKER_NETWORK] = true
 
@@ -70,11 +71,9 @@ const pullPlayers = () => {
   console.log('Pulling players...')
 
   // set trackers as up
-  isUp = isUp.map(() => true)
+  values(TRACKER).forEach((t) => { isUp[t] = true })
 
-  fetch(`${LOCAL_API}/player`)
-    .then((response) => response.json())
-    .catch((err) => console.log(`Error fetching players ${err}`))
+  api.player.all()
     .then((jsonData) => {
       console.log('Pulled players')
       const playersToUpdate = jsonData.data.players.filter(shouldUpdate)
@@ -94,31 +93,23 @@ const pullPlayers = () => {
 
 // pulls player info from tracker and updates through the api
 const updatePlayer = (player, tracker) =>
-  rlrankapi.getPlayerInformation(player.platform, player.id, API_KEY[tracker], tracker)
-    .then((stats) =>
-      fetch(`${LOCAL_API}/player/${player.platform}/${player.id}/update`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(stats),
+  new Promise((resolve, reject) =>
+    rlrankapi.getPlayerInformation(player.platform, player.id, API_KEY[tracker], tracker)
+      .then((stats) =>
+        api.player.update({
+          platform: player.platform,
+          id: player.id,
+          body: stats,
+        })
+      )
+      .then((info) => {
+        if (info.data.updated) {
+          return resolve(`Updated player: ${player.name}`)
+        }
+        resolve(`No update needed for player: ${player.name}`)
       })
-    )
-    .catch((err) => {
-      throw new Error(`Error updating ${player.name} with external api: ${err}`)
-    })
-    .then((res) => {
-      if (res.status === 200) {
-        return res.json()
-      }
-      throw new Error(`Error updating ${player.name} with local api: ${res.status}`)
-    })
-    .then((jsonData) => {
-      if (jsonData.data.updated) {
-        return `Updated player: ${player.name}`
-      }
-      return `No update needed for player: ${player.name}`
-    })
+      .catch((err) => reject(err))
+  )
 
 // queue definition
 let q = queue((player, callback) => {
@@ -132,31 +123,34 @@ let q = queue((player, callback) => {
     return
   }
 
-  const timesToWait = filteredTrackers.map((trackerId) => ({
-    trackerId,
-    timeToWait: timeToWaitBeforeNextRequest(RATE[trackerId], lastRequest[trackerId]),
+  const timesToWait = filteredTrackers.map((tracker) => ({
+    tracker,
+    timeToWait: timeToWaitBeforeNextRequest(RATE[tracker], lastRequest[tracker]),
   }))
 
   // sort by timeToWaitBeforeNextRequest
   timesToWait.sort((a, b) => a.timeToWait - b.timeToWait)
 
-  const trackerId = timesToWait[0].trackerId
+  // get first tracker
+  const tracker = timesToWait[0].tracker
   const trackerTimeToWait = timesToWait[0].timeToWait
-  const trackerName = TRACKER_NAME[trackerId]
 
-  console.log(`Waiting ${trackerTimeToWait} ms for next request using ${trackerName}...`)
+  console.log(`Waiting ${trackerTimeToWait} ms for next request using ${tracker}...`)
   setTimeout(() => {
-    lastRequest[trackerId] = Date.now()
-    console.log(`Starting update for player: ${player.name} using ${trackerName}`)
-    updatePlayer(player, trackerId, trackerTimeToWait)
+    lastRequest[tracker] = Date.now()
+    console.log(`Starting update for player: ${player.name} using ${tracker}`)
+    updatePlayer(player, tracker, trackerTimeToWait)
       .then((result) => {
         console.log(result)
         callback()
       })
       .catch((err) => {
-        console.log(`Marking ${trackerName} as down`)
-        isUp[trackerId] = false
-        callback(err)
+        const errMessage = err.statusText || err.message
+        if (errMessage !== 'Not Found' && errMessage !== 'PlayerNotFound' && errMessage !== 'InputError') {
+          console.log(`Marking ${tracker} as down`)
+          isUp[tracker] = false
+        }
+        callback(errMessage)
       })
   }, trackerTimeToWait)
 }, 1)

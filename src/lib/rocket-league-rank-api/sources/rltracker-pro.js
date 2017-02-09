@@ -25,26 +25,32 @@ const formatRanks = (ranks) => {
   return formattedRanks
 }
 
-const getPlayerInformation = (platform, id, apiKey) => {
-  const rltPlatform = platform + 1
-  const query = querystring.stringify({
-    api_key: apiKey,
-    platform: rltPlatform,
-    id,
+const getPlayerInformation = (platform, id, apiKey) =>
+  new Promise((resolve, reject) => {
+    const rltPlatform = platform + 1
+    const query = querystring.stringify({
+      api_key: apiKey,
+      platform: rltPlatform,
+      id,
+    })
+    return fetch(`${API_URL}?${query}`)
+      .then((res) => {
+        if (res.status >= 400) {
+          return reject(res)
+        }
+        try {
+          return res.json()
+        } catch (err) {
+          return reject(res)
+        }
+      })
+      .then((jsonData) => {
+        const info = formatRanks(jsonData.ranking)
+        info.name = jsonData.player.nickname
+        info.id = jsonData.player.player_id
+        resolve(info)
+      })
+      .catch((err) => reject(err))
   })
-  return fetch(`${API_URL}?${query}`)
-    .then((res) => {
-      if (res.status === 200) {
-        return res.json()
-      }
-      throw new Error(`Error status from external api: ${res.status}`)
-    })
-    .then((jsonData) => {
-      const info = formatRanks(jsonData.ranking)
-      info.name = jsonData.player.nickname
-      info.id = jsonData.player.player_id
-      return info
-    })
-}
 
 export default { getPlayerInformation }
