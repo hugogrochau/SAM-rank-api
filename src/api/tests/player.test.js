@@ -34,16 +34,16 @@ describe('Player Route', () => {
 
       it('Should recognize an invalid platform', () =>
         expect(api.player.get({ platform: 'wii-u', id: testSteamId }))
-          .to.eventually.have.property('message', 'InputError')
+          .to.eventually.be.rejectedWith('InputError')
       )
 
       it('Should recognize an invalid id', () =>
         expect(api.player.get({ platform: 0, id: -1 }))
-          .to.eventually.have.property('message', 'InputError')
+          .to.eventually.be.rejectedWith('InputError')
       )
       it('Should return PlayerNotFound on non-existent player', () =>
         expect(api.player.get({ platform: 0, id: testSteamId2 }))
-          .to.eventually.have.property('message', 'PlayerNotFound')
+          .to.eventually.be.rejectedWith('PlayerNotFound')
       )
     })
 
@@ -55,14 +55,14 @@ describe('Player Route', () => {
 
       it('Should deny an unauthenticated player', () =>
           expect(api.player.me({ headers: { auth_token: 'banana' } }))
-            .to.eventually.have.property('message', 'Unauthorized')
+            .to.eventually.be.rejectedWith('Unauthorized')
         )
     })
 
     describe('/player/remove/me', () => {
       it('Should deny an unauthenticated player', () =>
         expect(api.player.removeMe({ headers: { auth_token: 'banana' } }))
-          .to.eventually.have.property('message', 'Unauthorized')
+          .to.eventually.be.rejectedWith('Unauthorized')
       )
 
       it('Should remove the authorized player', () =>
@@ -71,7 +71,7 @@ describe('Player Route', () => {
 
       it('Should not remove the same player again', () =>
         expect(api.player.removeMe({ headers: { auth_token: testToken } }))
-          .to.eventually.have.property('message', 'PlayerNotFound')
+          .to.eventually.be.rejectedWith('PlayerNotFound')
       )
     })
   })
@@ -97,24 +97,24 @@ describe('Player Route', () => {
 
       it('Should not update invalid rows', () =>
         expect(api.player.update({ platform: 0, id: testSteamId, body: { foo: testSteamName } }))
-          .to.eventually.have.property('message', 'InputError')
+          .to.eventually.be.rejectedWith('InputError')
       )
 
       it('Should validate numeric rows', () =>
         expect(api.player.update({ platform: 0, id: testSteamId, body: { '1v1': 'asdfasdf' } }))
-          .to.eventually.have.property('message', 'InputError')
+          .to.eventually.be.rejectedWith('InputError')
       )
 
       it('Should not update an non-existent player', () =>
         expect(api.player.update({ platform: 0, id: testSteamId2 }))
-          .to.eventually.have.property('message', 'PlayerNotFound')
+          .to.eventually.be.rejectedWith('PlayerNotFound')
       )
     })
 
     describe('/player/remove/:platform/:id', () => {
       it('Should not remove a non-existent player', () =>
         expect(api.player.remove({ platform: 0, id: testSteamId2 }))
-          .to.eventually.have.property('message', 'PlayerNotFound')
+          .to.eventually.be.rejectedWith('PlayerNotFound')
       )
 
       it('Should remove a player', () =>
@@ -124,7 +124,7 @@ describe('Player Route', () => {
 
       it('Should not remove a player twice', () =>
         expect(api.player.remove({ platform: 0, id: testSteamId }))
-          .to.eventually.have.property('message', 'PlayerNotFound')
+          .to.eventually.be.rejectedWith('PlayerNotFound')
       )
     })
   })

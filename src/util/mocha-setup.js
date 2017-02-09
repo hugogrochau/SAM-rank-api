@@ -5,9 +5,10 @@ import bs from '../services/bookshelf'
 import app from '../index'
 
 const port = process.env.PORT || 8081
+const host = `http://127.0.0.1:${port}/v1`
 
 global.expect = chai.use(chaiAsPromised).expect
-global.api = apiClient(`http://127.0.0.1:${port}/v1`, { ignoreErrors: true })
+global.api = apiClient({ host })
 
 before((done) => {
   bs.knex.migrate.rollback().then(() =>

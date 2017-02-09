@@ -24,7 +24,7 @@ describe('Team Route', () => {
     describe('/team/create/mine', () => {
       it('Should not create a team for an unauthenticated player', () =>
         expect(api.team.createMine({ headers: { auth_token: 'adfadfs' } }))
-          .to.eventually.have.property('message', 'Unauthorized')
+          .to.be.rejectedWith('Unauthorized')
       )
 
       it('Should create a team for the authenticated player', () =>
@@ -89,7 +89,7 @@ describe('Team Route', () => {
 
       it('Should prevent a non-leader from setting the leader', () =>
         expect(api.team.setLeaderMine({ playerPlatform: 0, playerId: testSteamId, headers: { auth_token: testToken } }))
-          .to.eventually.have.property('message', 'Unauthorized')
+          .to.be.rejectedWith('Unauthorized')
       )
     })
 
@@ -114,7 +114,7 @@ describe('Team Route', () => {
           playerId: testSteamId2,
           headers: { auth_token: testToken },
         }))
-          .to.eventually.have.property('message', 'Unauthorized')
+          .to.be.rejectedWith('Unauthorized')
       )
     })
 
