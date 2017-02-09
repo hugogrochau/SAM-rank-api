@@ -3,7 +3,7 @@ import queue from 'async/queue'
 import values from 'lodash/values'
 import apiClient from 'rocketleaguesam-api-client'
 
-import rlrankapi, { TRACKER } from '../lib/rocket-league-rank-api'
+import rlrankapi, { TRACKER } from 'rocket-league-apis-client'
 
 /* eslint-disable no-console */
 

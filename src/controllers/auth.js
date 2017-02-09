@@ -1,7 +1,7 @@
 import openid from 'openid'
 import jwt from 'jwt-simple'
+import rlApi, { TRACKER } from 'rocket-league-apis-client'
 import Player from '../models/player'
-import rlApi, { TRACKER } from '../lib/rocket-league-rank-api'
 
 const authenticate = (returnUrl, realm) => {
   const relyingParty = new openid.RelyingParty(returnUrl, realm, true, false, [])
