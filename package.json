@@ -14,8 +14,7 @@
     "migrate": "knex migrate:latest --env development",
     "lint": "eslint src test",
     "lint:staged": "lint-staged",
-    "all": "npm run lint && npm run test",
-    "updater": ". ./.env; npm run build && node dist/scripts/update.js"
+    "all": "npm run lint && npm run test"
   },
   "lint-staged": {
     "*.js": "lint"
