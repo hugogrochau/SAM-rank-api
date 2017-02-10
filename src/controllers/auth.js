@@ -1,6 +1,6 @@
 import openid from 'openid'
 import jwt from 'jwt-simple'
-import rlApi, { TRACKER } from 'rocket-league-apis-client'
+import RocketLeagueApisClient, { TRACKER } from 'rocket-league-apis-client'
 import Player from '../models/player'
 
 const authenticate = (returnUrl, realm) => {
@@ -22,6 +22,12 @@ const authenticate = (returnUrl, realm) => {
 const verify = (returnUrl, realm, responseUrl) => {
   const relyingParty = new openid.RelyingParty(returnUrl, realm, true, false, [])
   const secret = process.env.JWT_SECRET
+  const rankApi = RocketLeagueApisClient({
+    tracker: TRACKER.RLTRACKER_PRO,
+    apiUrl: process.env.RLTRACKER_PRO_API_URL,
+    apiKey: process.env.RLTRACKER_PRO_API_KEY,
+  })
+
 
   return new Promise((resolve, reject) =>
     relyingParty.verifyAssertion(responseUrl, (error, result) => {
@@ -42,7 +48,7 @@ const verify = (returnUrl, realm, responseUrl) => {
           })
           // new player
           .catch(Player.NotFoundError, () => {
-            rlApi.getPlayerInformation(0, playerId, process.env.RLTRACKER_PRO_API_KEY, TRACKER.RLTRACKER_PRO)
+            rankApi(0, playerId)
               .then((playerData) =>
                 new Player({
                   id: playerId,

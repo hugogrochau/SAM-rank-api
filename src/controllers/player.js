@@ -48,6 +48,7 @@ const updatePlayer = (platform, id, updates) => new Promise((resolve, reject) =>
   new Player({ id, platform: platformId }).fetch({ require: true })
     .then((player) => {
       // Filter only updates that change existing values ~ magic ~
+      // TODO don't count rank changes smaller than 2
       validUpdates = Object.keys(updates).reduce((acc, k) =>
           columns.includes(k) && String(player.get(k)).toLowerCase() !== String(updates[k]).toLowerCase() ?
             { ...acc, [k]: updates[k] } : { ...acc }
