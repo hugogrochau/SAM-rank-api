@@ -23,11 +23,10 @@ const verify = (returnUrl, realm, responseUrl) => {
   const relyingParty = new openid.RelyingParty(returnUrl, realm, true, false, [])
   const secret = process.env.JWT_SECRET
   const rankApi = RocketLeagueApisClient({
-    tracker: TRACKER.RLTRACKER_PRO,
-    apiUrl: process.env.RLTRACKER_PRO_API_URL,
-    apiKey: process.env.RLTRACKER_PRO_API_KEY,
+    tracker: TRACKER.ROCKETLEAGUE_TRACKER_NETWORK,
+    apiUrl: process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_URL,
+    apiKey: process.env.ROCKETLEAGUE_TRACKER_NETWORK_API_KEY,
   })
-
 
   return new Promise((resolve, reject) =>
     relyingParty.verifyAssertion(responseUrl, (error, result) => {
@@ -53,7 +52,7 @@ const verify = (returnUrl, realm, responseUrl) => {
                 new Player({
                   id: playerId,
                   platform: 0,
-                }).save(playerData, { method: 'insert' })
+                }).save(playerData.player, { method: 'insert' })
               )
               .then((player) => resolve({ player: player.toJSON(), token }))
           })

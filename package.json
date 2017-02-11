@@ -1,6 +1,6 @@
 {
   "name": "rocketleaguesam-api",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Rocket League South America API",
   "main": "dist",
   "scripts": {
@@ -42,7 +42,7 @@
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-stage-0": "^6.22.0",
     "babel-register": "^6.22.0",
-    "body-parser": "^1.16.0",
+    "body-parser": "^1.16.1",
     "bookshelf": "^0.10.3",
     "compression": "^1.6.2",
     "cors": "^2.8.1",
@@ -53,14 +53,14 @@
     "jwt-simple": "^0.5.1",
     "knex": "^0.12.6",
     "lodash": "^4.17.4",
-    "morgan": "^1.8.0",
+    "morgan": "^1.8.1",
     "openid": "^2.0.6",
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1",
     "pg": "^6.1.2",
     "resource-router-middleware": "^0.6.0",
-    "rocket-league-apis-client": "^0.2.0",
-    "rocketleaguesam-api-client": "^0.3.3",
+    "rocket-league-apis-client": "^0.2.3",
+    "rocketleaguesam-api-client": "^0.3.4",
     "validator": "^6.2.1"
   },
   "devDependencies": {
