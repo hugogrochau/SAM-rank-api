@@ -6,7 +6,7 @@ import cors from 'cors'
 import jsend from 'jsend'
 import morgan from 'morgan'
 import validators from './util/validators'
-import api from './api'
+import api from './routes'
 import setStatusMiddleware from './middlewares/format-errors'
 
 const app = express()
