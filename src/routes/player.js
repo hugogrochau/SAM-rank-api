@@ -140,11 +140,21 @@ const api = Router()
  *
  * @apiUse DatabaseError
  */
-api.get('/', (req, res) =>
-  player.getPlayers()
-    .then((players) => res.jsend.success(players))
-    .catch((err) => res.jsend.error(err))
-)
+api.get('/', (req, res) => {
+  req.checkQuery('page', 'Invalid page').optional().isInt({ min: 1 })
+  req.checkQuery('pageSize', 'Invalid page size').optional().isInt({ min: 1 })
+
+  req.getValidationResult().then((result) => {
+    if (!result.isEmpty()) {
+      return res.jsend.error({ message: 'InputError', data: result.mapped() })
+    }
+    const page = parseInt(req.query.page, 10) || 1
+    const pageSize = parseInt(req.query.pageSize, 10) || 50
+    player.getPlayers({ page, pageSize })
+      .then((players) => res.jsend.success(players))
+      .catch((err) => res.jsend.error(err))
+  })
+})
 
 /**
  * @api {get} /player/:platform/:id Get Player information

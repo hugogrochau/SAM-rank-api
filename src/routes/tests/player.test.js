@@ -19,12 +19,16 @@ describe('Player Route', () => {
       bs.knex('player').truncate()
     )
 
-    describe('/player', () =>
+    describe('/player', () => {
       it('Should get all players', () =>
         expect(api.player.all())
           .to.eventually.have.deep.property('data.players[0].id', testSteamId)
       )
-    )
+      it('Should get all players paginated', () =>
+        expect(api.player.all({ pageSize: 15, page: 1 }))
+          .to.eventually.have.deep.property('data.pagination.page', 1)
+      )
+    })
 
     describe('/player/:platform/:id/', () => {
       it('Should get a player', () =>
