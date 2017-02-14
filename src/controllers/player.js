@@ -1,15 +1,13 @@
 import Player from '../models/player'
 import PlayerUpdate from '../models/player-update'
 
-const getPlayers = (pagination) =>
+const getPlayers = (options) =>
   new Promise((resolve, reject) => {
-    let playersFetch = {}
-    if (pagination) {
-      playersFetch = new Player().fetchPage(pagination)
-    } else {
-      playersFetch = new Player().fetchAll()
-    }
-    return playersFetch
+    const defaults = { page: 1, pageSize: 50, orderBy: '3v3' }
+    const { page, pageSize, orderBy } = { ...defaults, ...options }
+    return new Player()
+      .orderBy(orderBy, 'DESC')
+      .fetchPage({ page, pageSize })
       .then((players) => resolve({ players: players.toJSON(), pagination: players.pagination }))
       .catch((err) => reject({ message: 'DatabaseError', data: err }))
   })

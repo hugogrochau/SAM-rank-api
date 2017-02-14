@@ -2,6 +2,7 @@ import bs from '../../services/bookshelf'
 import player from '../player'
 
 const testSteamId = '76561198336554280'
+const testSteamId2 = String(testSteamId - 1)
 const testSteamName = 'KappaPride'
 
 describe('Player Controller', () => {
@@ -24,11 +25,24 @@ describe('Player Controller', () => {
   })
 
   describe('getPlayers', () => {
+    before(() =>
+      player.addPlayer(0, testSteamId2)
+        .then(() => Promise.all([
+          player.updatePlayer(0, testSteamId, { '1v1': 2, '2v2': 1 }),
+          player.updatePlayer(0, testSteamId2, { '1v1': 1, '2v2': 2 }),
+        ]))
+    )
     it('Should get all players', () =>
       expect(player.getPlayers()).to.eventually.have.deep.property('players[0].id', testSteamId)
     )
     it('Should paginate', () =>
       expect(player.getPlayers({ pageSize: 5, page: 1 })).to.eventually.have.deep.property('pagination.page', 1)
+    )
+    it('Should order by 1v1', () =>
+      expect(player.getPlayers({ orderBy: '1v1' })).to.eventually.have.deep.property('players[0].id', testSteamId)
+    )
+    it('Should order by 2v2', () =>
+      expect(player.getPlayers({ orderBy: '2v2' })).to.eventually.have.deep.property('players[0].id', testSteamId2)
     )
   })
 
