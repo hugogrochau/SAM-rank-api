@@ -132,9 +132,12 @@ const api = Router()
 /* External Routes */
 
 /**
- * @api {get} /player/ Get all Players
+ * @api {get} /player/?page=x&pageSize=y Get all Players
  * @apiName GetPlayers
  * @apiGroup Player
+ *
+ * @apiParam {Number} page Page number
+ * @apiParam {Number} pageSize Page size
  *
  * @apiSuccess {Object[]} players List of Players
  *

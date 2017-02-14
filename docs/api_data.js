@@ -47,7 +47,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "src/api/auth.js",
+    "filename": "src/routes/auth.js",
     "groupTitle": "Auth",
     "error": {
       "fields": {
@@ -153,7 +153,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "src/api/auth.js",
+    "filename": "src/routes/auth.js",
     "groupTitle": "Auth",
     "error": {
       "fields": {
@@ -232,7 +232,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/player.js",
+    "filename": "src/routes/player.js",
     "groupTitle": "Player",
     "success": {
       "fields": {
@@ -303,7 +303,7 @@ define({ "api": [
     "name": "GetMyPlayer",
     "group": "Player",
     "version": "0.0.0",
-    "filename": "src/api/player.js",
+    "filename": "src/routes/player.js",
     "groupTitle": "Player",
     "header": {
       "fields": {
@@ -433,7 +433,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/player.js",
+    "filename": "src/routes/player.js",
     "groupTitle": "Player",
     "success": {
       "fields": {
@@ -499,10 +499,30 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/player/",
+    "url": "/player/?page=x&pageSize=y",
     "title": "Get all Players",
     "name": "GetPlayers",
     "group": "Player",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Page number</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>Page size</p>"
+          }
+        ]
+      }
+    },
     "success": {
       "fields": {
         "Success 200": [
@@ -517,7 +537,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/player.js",
+    "filename": "src/routes/player.js",
     "groupTitle": "Player",
     "error": {
       "fields": {
@@ -566,7 +586,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "src/api/player.js",
+    "filename": "src/routes/player.js",
     "groupTitle": "Player",
     "header": {
       "fields": {
@@ -696,7 +716,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "src/api/player.js",
+    "filename": "src/routes/player.js",
     "groupTitle": "Player",
     "error": {
       "fields": {
@@ -791,7 +811,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/player.js",
+    "filename": "src/routes/player.js",
     "groupTitle": "Player",
     "success": {
       "fields": {
@@ -901,7 +921,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "header": {
       "fields": {
@@ -1038,7 +1058,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "success": {
       "fields": {
@@ -1133,7 +1153,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "header": {
       "fields": {
@@ -1237,7 +1257,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "success": {
       "fields": {
@@ -1297,7 +1317,7 @@ define({ "api": [
     "name": "GetMyTeam",
     "group": "Team",
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "header": {
       "fields": {
@@ -1401,7 +1421,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "success": {
       "fields": {
@@ -1485,7 +1505,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "error": {
       "fields": {
@@ -1534,7 +1554,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "header": {
       "fields": {
@@ -1644,7 +1664,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "header": {
       "fields": {
@@ -1781,7 +1801,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "success": {
       "fields": {
@@ -1896,7 +1916,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "error": {
       "fields": {
@@ -1947,7 +1967,7 @@ define({ "api": [
     "name": "SetMyTeamLeader",
     "group": "Team",
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "header": {
       "fields": {
@@ -2084,7 +2104,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "src/api/team.js",
+    "filename": "src/routes/team.js",
     "groupTitle": "Team",
     "success": {
       "fields": {

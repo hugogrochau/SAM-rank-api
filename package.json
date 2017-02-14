@@ -1,6 +1,6 @@
 {
   "name": "rocketleaguesam-api",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Rocket League South America API",
   "main": "dist",
   "scripts": {
@@ -10,7 +10,7 @@
     "prestart": "npm run build",
     "test": ". ./.env.test; mocha --opts ./mocha.opts",
     "test:watch": ". ./.env.test; mocha --watch --opts ./mocha.opts",
-    "docs": "apidoc -i src/api -o docs/",
+    "docs": "apidoc -i src/routes -o docs/",
     "migrate": "knex migrate:latest --env development",
     "lint": "eslint src test",
     "lint:staged": "lint-staged",
@@ -22,11 +22,11 @@
   "pre-commit": "lint:staged",
   "apidoc": {
     "name": "rocketleaguesam-api",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "description": "Rocket League South America API",
     "apidoc": {
       "description": "Rocket League South America API",
-      "url": "https://127.0.0.1:8080/api/v1/"
+      "url": "https://api.rocketleaguesam.com/"
     }
   },
   "repository": {
