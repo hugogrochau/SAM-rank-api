@@ -42,6 +42,9 @@ class Player extends bs.Model {
     ]
   }
 
+  static get ranks() {
+    return ['1v1', '2v2', '3v3s', '3v3']
+  }
 
   get virtuals() {
     return {

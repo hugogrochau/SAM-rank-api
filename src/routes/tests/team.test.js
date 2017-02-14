@@ -2,7 +2,7 @@ import bs from '../../services/bookshelf'
 
 const testTeamName = 'Black Dragons'
 const testSteamId = '76561198336554280'
-const testSteamId2 = String(testSteamId - 1)
+const testSteamId2 = '76561198336554279'
 const testToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3NjU2MTE5ODMzNjU1NDI4MCIsImlhdCI6MTQ4NjQ5NTY2NjQzMH0.DhV-7lpgHzYN9eLXZxPsQynzJAMkRSyTDzMGAsOJkhU'
 
 describe('Team Route', () => {

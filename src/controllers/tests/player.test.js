@@ -2,7 +2,7 @@ import bs from '../../services/bookshelf'
 import player from '../player'
 
 const testSteamId = '76561198336554280'
-const testSteamId2 = String(testSteamId - 1)
+const testSteamId2 = '76561198336554279'
 const testSteamName = 'KappaPride'
 
 describe('Player Controller', () => {

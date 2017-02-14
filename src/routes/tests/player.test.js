@@ -1,7 +1,8 @@
 import bs from '../../services/bookshelf'
 
 const testSteamId = '76561198336554280'
-const testSteamId2 = String(testSteamId - 1)
+const testSteamId2 = '76561198336554279'
+const testSteamId3 = '76561198336554278'
 const testSteamName = 'KappaPride'
 const testToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3NjU2MTE5ODMzNjU1NDI4MCIsImlhdCI6MTQ4NjQ5NTY2NjQzMH0.DhV-7lpgHzYN9eLXZxPsQynzJAMkRSyTDzMGAsOJkhU'
 
@@ -12,7 +13,15 @@ describe('Player Route', () => {
 
   describe('External routes', () => {
     before(() =>
-      api.player.add({ platform: 0, id: testSteamId })
+      Promise.all([
+        api.player.add({ platform: 0, id: testSteamId }),
+        api.player.add({ platform: 0, id: testSteamId2 }),
+      ]).then(() =>
+        Promise.all([
+          api.player.update({ platform: 0, id: testSteamId, body: { '1v1': 2, '2v2': 1 } }),
+          api.player.update({ platform: 0, id: testSteamId2, body: { '1v1': 1, '2v2': 2 } }),
+        ])
+      )
     )
 
     after(() =>
@@ -22,11 +31,20 @@ describe('Player Route', () => {
     describe('/player', () => {
       it('Should get all players', () =>
         expect(api.player.all())
-          .to.eventually.have.deep.property('data.players[0].id', testSteamId)
+          .to.eventually.have.deep.property('data.players.length', 2)
       )
       it('Should get all players paginated', () =>
         expect(api.player.all({ pageSize: 15, page: 1 }))
           .to.eventually.have.deep.property('data.pagination.page', 1)
+      )
+
+      it('Should get all players ordered by 1v1', () =>
+        expect(api.player.all({ orderBy: '1v1' }))
+          .to.eventually.have.deep.property('data.players[0].id', testSteamId)
+      )
+      it('Should get all players ordered by 2v2', () =>
+        expect(api.player.all({ orderBy: '2v2' }))
+          .to.eventually.have.deep.property('data.players[0].id', testSteamId2)
       )
     })
 
@@ -46,7 +64,7 @@ describe('Player Route', () => {
           .to.eventually.be.rejectedWith('InputError')
       )
       it('Should return PlayerNotFound on non-existent player', () =>
-        expect(api.player.get({ platform: 0, id: testSteamId2 }))
+        expect(api.player.get({ platform: 0, id: testSteamId3 }))
           .to.eventually.be.rejectedWith('PlayerNotFound')
       )
     })
@@ -110,14 +128,14 @@ describe('Player Route', () => {
       )
 
       it('Should not update an non-existent player', () =>
-        expect(api.player.update({ platform: 0, id: testSteamId2 }))
+        expect(api.player.update({ platform: 0, id: testSteamId3 }))
           .to.eventually.be.rejectedWith('PlayerNotFound')
       )
     })
 
     describe('/player/remove/:platform/:id', () => {
       it('Should not remove a non-existent player', () =>
-        expect(api.player.remove({ platform: 0, id: testSteamId2 }))
+        expect(api.player.remove({ platform: 0, id: testSteamId3 }))
           .to.eventually.be.rejectedWith('PlayerNotFound')
       )
 

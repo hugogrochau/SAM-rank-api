@@ -146,6 +146,7 @@ const api = Router()
 api.get('/', (req, res) => {
   req.checkQuery('page', 'Invalid page').optional().isInt({ min: 1 })
   req.checkQuery('pageSize', 'Invalid page size').optional().isInt({ min: 1 })
+  req.checkQuery('orderBy', 'Invalid rank').optional().isRank()
 
   req.getValidationResult().then((result) => {
     if (!result.isEmpty()) {
@@ -153,7 +154,8 @@ api.get('/', (req, res) => {
     }
     const page = parseInt(req.query.page, 10) || 1
     const pageSize = parseInt(req.query.pageSize, 10) || 50
-    player.getPlayers({ page, pageSize })
+    const orderBy = req.query.orderBy || '3v3s'
+    player.getPlayers({ page, pageSize, orderBy })
       .then((players) => res.jsend.success(players))
       .catch((err) => res.jsend.error(err))
   })

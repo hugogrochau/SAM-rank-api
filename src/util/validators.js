@@ -24,4 +24,6 @@ const isValidXboxId = (input) =>
 
 const isValidName = (input) => validator.isLength(input, { min: 2, max: 32 })
 
-export default { isValidIdForPlatform, isValidPlatform, isValidSteamId, isValidXboxId, isValidPSNId, isValidName }
+const isRank = (input) => Player.ranks.includes(input)
+
+export default { isValidIdForPlatform, isValidPlatform, isValidSteamId, isValidXboxId, isValidPSNId, isValidName, isRank }
