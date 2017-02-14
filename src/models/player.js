@@ -20,6 +20,20 @@ class Player extends bs.Model {
     return this.hasMany(PlayerUpdate)
   }
 
+  isValidUpdate(key, value) {
+    if (!Player.updatableColumns.includes(key)) return false
+    // if key isn't already set
+    if (!this.get(key)) return true
+    const parsedInt = parseInt(value, 10)
+    // ranks
+    if (parsedInt) {
+      // ignore rank changes lesser or equal to 2
+      return Math.abs(this.get(key) - value) > 2
+    // name
+    }
+    return this.get(key).toLowerCase() !== value.toLowerCase()
+  }
+
   static getPlatformIdFromString(platformString) {
     switch (String(platformString).toLowerCase()) {
       case '0':

@@ -64,8 +64,12 @@ describe('Player Controller', () => {
         .to.eventually.have.deep.property('player.name', testSteamName)
     )
 
-    it('Should recognize unneeded updates', () =>
+    it('Should recognize unneeded name updates', () =>
       expect(player.updatePlayer(0, testSteamId, { name: testSteamName }))
+        .to.eventually.have.property('updated', false)
+    )
+    it('Should recognize unneeded rank updates', () =>
+      expect(player.updatePlayer(0, testSteamId, { '1v1': 4 }))
         .to.eventually.have.property('updated', false)
     )
   })
