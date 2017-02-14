@@ -1,13 +1,18 @@
 import Player from '../models/player'
 import PlayerUpdate from '../models/player-update'
 
-const getPlayers = () =>
-  new Promise((resolve, reject) =>
-    new Player()
-      .fetchAll()
-      .then((players) => resolve({ players: players.toJSON() }))
+const getPlayers = (pagination) =>
+  new Promise((resolve, reject) => {
+    let playersFetch = {}
+    if (pagination) {
+      playersFetch = new Player().fetchPage(pagination)
+    } else {
+      playersFetch = new Player().fetchAll()
+    }
+    return playersFetch
+      .then((players) => resolve({ players: players.toJSON(), pagination: players.pagination }))
       .catch((err) => reject({ message: 'DatabaseError', data: err }))
-  )
+  })
 
 const getPlayer = (platform, id) =>
   new Promise((resolve, reject) => {

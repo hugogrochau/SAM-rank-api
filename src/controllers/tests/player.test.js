@@ -23,11 +23,14 @@ describe('Player Controller', () => {
     )
   })
 
-  describe('getPlayers', () =>
+  describe('getPlayers', () => {
     it('Should get all players', () =>
       expect(player.getPlayers()).to.eventually.have.deep.property('players[0].id', testSteamId)
     )
-  )
+    it('Should paginate', () =>
+      expect(player.getPlayers({ pageSize: 5, page: 1 })).to.eventually.have.deep.property('pagination.page', 1)
+    )
+  })
 
   describe('getPlayer', () => {
     it('Should get a player', () =>
