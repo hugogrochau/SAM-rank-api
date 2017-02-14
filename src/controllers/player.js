@@ -3,7 +3,7 @@ import PlayerUpdate from '../models/player-update'
 
 const getPlayers = (options) =>
   new Promise((resolve, reject) => {
-    const defaults = { page: 1, pageSize: 50, orderBy: '3v3' }
+    const defaults = { page: 1, pageSize: 50, orderBy: '3v3s' }
     const { page, pageSize, orderBy } = { ...defaults, ...options }
     return new Player()
       .orderBy(orderBy, 'DESC')

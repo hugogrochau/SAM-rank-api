@@ -43,15 +43,7 @@ class Player extends bs.Model {
   }
 
   static get ranks() {
-    return ['1v1', '2v2', '3v3s', '3v3']
-  }
-
-  get virtuals() {
-    return {
-      sum: {
-        get: () => this.get('1v1') + this.get('2v2') + this.get('3v3') + this.get('3v3s'),
-      },
-    }
+    return ['1v1', '2v2', '3v3s', '3v3', 'sum']
   }
 }
 

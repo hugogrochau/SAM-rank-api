@@ -29,7 +29,7 @@ describe('Player Controller', () => {
       player.addPlayer(0, testSteamId2)
         .then(() => Promise.all([
           player.updatePlayer(0, testSteamId, { '1v1': 2, '2v2': 1 }),
-          player.updatePlayer(0, testSteamId2, { '1v1': 1, '2v2': 2 }),
+          player.updatePlayer(0, testSteamId2, { '1v1': 1, '2v2': 2, '3v3': 5 }),
         ]))
     )
     it('Should get all players', () =>
@@ -44,11 +44,17 @@ describe('Player Controller', () => {
     it('Should order by 2v2', () =>
       expect(player.getPlayers({ orderBy: '2v2' })).to.eventually.have.deep.property('players[0].id', testSteamId2)
     )
+    it('Should order by sum', () =>
+      expect(player.getPlayers({ orderBy: 'sum' })).to.eventually.have.deep.property('players[0].id', testSteamId2)
+    )
   })
 
   describe('getPlayer', () => {
     it('Should get a player', () =>
       expect(player.getPlayer(0, testSteamId)).to.eventually.have.deep.property('player.id', testSteamId)
+    )
+    it('Should properly get a player\'s rank sum', () =>
+      expect(player.getPlayer(0, testSteamId)).to.eventually.have.deep.property('player.sum', 3)
     )
   })
 

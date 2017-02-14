@@ -22,6 +22,7 @@ exports.up = function(knex, Promise) {
     table.integer('3v3s_division');
     table.integer('3v3s_games_played');
     table.integer('3v3s_tier');
+    table.integer('sum');
     table.integer('priority').defaultTo(5);
     table.timestamp('created_at');
     table.timestamp('last_update');
