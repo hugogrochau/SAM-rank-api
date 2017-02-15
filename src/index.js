@@ -33,13 +33,16 @@ app.use(jsend.middleware)
 
 app.use(setStatusMiddleware)
 
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('combined'))
+}
+
 // api router
 app.use(api)
 
 
-// no need to start a server when testing
+// don't start a server when testing
 if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined'))
   app.server.listen(process.env.PORT || 8080)
   /* eslint-disable no-console */
   console.log(`Started on port ${app.server.address().port}`)
