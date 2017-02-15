@@ -26,12 +26,17 @@ class Player extends bs.Model {
     if (!this.get(key)) return true
     const parsedInt = parseInt(value, 10)
     // ranks
-    if (parsedInt) {
+    if (!isNaN(parsedInt)) {
       // ignore rank changes lesser or equal to 2
       return Math.abs(this.get(key) - value) > 2
-    // name
     }
-    return this.get(key).toLowerCase() !== value.toLowerCase()
+
+    // name
+    if (key === 'name') {
+      return this.get(key).toLowerCase() !== value.toLowerCase()
+    }
+
+    return false
   }
 
   static getPlatformIdFromString(platformString) {
