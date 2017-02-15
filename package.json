@@ -1,6 +1,6 @@
 {
   "name": "rocketleaguesam-api",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "Rocket League South America API",
   "main": "dist",
   "scripts": {
