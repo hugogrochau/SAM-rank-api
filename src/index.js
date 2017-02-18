@@ -5,6 +5,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import jsend from 'jsend'
 import morgan from 'morgan'
+import compression from 'compression'
 import validators from './util/validators'
 import api from './routes'
 import setStatusMiddleware from './middlewares/format-errors'
@@ -24,6 +25,8 @@ app.use(bodyParser.json({
 app.use(bodyParser.urlencoded({
   extended: true,
 }))
+
+app.use(compression())
 
 app.use(expressValidator({
   customValidators: validators,
