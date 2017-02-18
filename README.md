@@ -29,4 +29,4 @@ API docs are defined with `apidoc`, build them with `npm run docs`
 
 
 ## Authors
-* @hugogrochau
+* [hugogrochau](http://hugo.grochau.com)
